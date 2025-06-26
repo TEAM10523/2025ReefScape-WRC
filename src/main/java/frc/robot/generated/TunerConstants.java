@@ -102,7 +102,7 @@ public class TunerConstants {
 
   public static final double controlLoopCycleTime = 0.02;
 
-  public static final double wheelFrictionCoeff = 1;
+  public static final double wheelFrictionCoeff = 1.5;
 
   public static final SwerveDrivetrainConstants DrivetrainConstants =
       new SwerveDrivetrainConstants()

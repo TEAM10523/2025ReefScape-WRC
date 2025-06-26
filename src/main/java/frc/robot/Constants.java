@@ -13,8 +13,6 @@
 
 package frc.robot;
 
-import java.rmi.server.RemoteStub;
-
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
@@ -45,7 +43,7 @@ public final class Constants {
 
     public final double gravity;
 
-    Location(double gravity){
+    Location(double gravity) {
       this.gravity = gravity;
     }
   }
@@ -53,5 +51,4 @@ public final class Constants {
   public static final Location location = Location.Shanghai;
 
   public static final double g = location.gravity;
-
 }
