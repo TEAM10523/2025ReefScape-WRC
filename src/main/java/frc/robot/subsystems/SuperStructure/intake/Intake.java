@@ -11,15 +11,15 @@ public class Intake extends SubsystemBase {
   public Intake(IntakeIO io) {
     this.io = io;
     io.setPID(
-      IntakeConstants.Kp,
-      IntakeConstants.Ki,
-      IntakeConstants.Kd,
-      IntakeConstants.Ks,
-      IntakeConstants.Kv,
-      IntakeConstants.Ka);
+        IntakeConstants.Kp,
+        IntakeConstants.Ki,
+        IntakeConstants.Kd,
+        IntakeConstants.Ks,
+        IntakeConstants.Kv,
+        IntakeConstants.Ka);
   }
 
-  public enum IntakeState{
+  public enum IntakeState {
     Intake,
     Eject,
     Score,
@@ -29,7 +29,6 @@ public class Intake extends SubsystemBase {
 
   public static IntakeState intakeState = IntakeState.Stop;
 
-
   public void runSetPoint(double velocityRadsPerSec, double acceleration) {
     io.runVelocitySetpoint(velocityRadsPerSec, acceleration);
   }
@@ -38,28 +37,27 @@ public class Intake extends SubsystemBase {
     io.runVolts(volts);
   }
 
-   /** Stops motors. */
+  /** Stops motors. */
   public void stop() {
     io.stop();
   }
 
-    /** Get velocity of rolley in m/s. */
+  /** Get velocity of rolley in m/s. */
   public double getVelocityMetersPerSec() {
-      return inputs.intakeVelocityMetersPerSec;
+    return inputs.intakeVelocityMetersPerSec;
   }
 
-  public double getvolts(){
-      return inputs.intakeAppliedVolts;
+  public double getvolts() {
+    return inputs.intakeAppliedVolts;
   }
 
-  
-  public void setState(IntakeState state){
-      intakeState=state;
+  public void setState(IntakeState state) {
+    intakeState = state;
   }
 
-  public boolean hasCoral(){
-    return Math.abs(inputs.intakeVelocityMetersPerSec) < IntakeConstants.tolerance && 
-      inputs.intakeTorqueCurrentAmps > IntakeConstants.minSupplyCurrent;
+  public boolean hasCoral() {
+    return Math.abs(inputs.intakeVelocityMetersPerSec) < IntakeConstants.tolerance
+        && inputs.intakeTorqueCurrentAmps > IntakeConstants.minSupplyCurrent;
   }
 
   @Override

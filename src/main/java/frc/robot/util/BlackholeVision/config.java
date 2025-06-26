@@ -8,28 +8,28 @@ import edu.wpi.first.math.geometry.Pose3d;
 
 /** Add your docs here. */
 public class config {
-    public double[]cameraMatrix;
-    public double[] distortionCoeffs;
-    public Pose3d cameraPose;
-    public long[] resolution;
-    public double exposure;
-    public double gain;
-    public double maxFPS;
+  public double[] cameraMatrix;
+  public double[] distortionCoeffs;
+  public Pose3d cameraPose;
+  public long[] resolution;
+  public double exposure;
+  public double gain;
+  public double maxFPS;
 
-    public config(
-        double[]cameraMatrix, 
-        double[] distortionCoeffs, 
-        Pose3d cameraPose, 
-        long[] resolution, 
-        double exposure, 
-        double gain, 
-        double maxFPS){
-            this.cameraMatrix = cameraMatrix;
-            this.distortionCoeffs = distortionCoeffs;
-            this.cameraPose = cameraPose;
-            this.resolution = resolution;
-            this.exposure = exposure;
-            this.gain = gain;
-            this.maxFPS = maxFPS;
-    }
+  public config(
+      double[] cameraMatrix,
+      double[] distortionCoeffs,
+      Pose3d cameraPose,
+      long[] resolution,
+      double exposure,
+      double gain,
+      double maxFPS) {
+    this.cameraMatrix = cameraMatrix;
+    this.distortionCoeffs = distortionCoeffs;
+    this.cameraPose = cameraPose;
+    this.resolution = resolution;
+    this.exposure = exposure;
+    this.gain = gain;
+    this.maxFPS = maxFPS;
+  }
 }

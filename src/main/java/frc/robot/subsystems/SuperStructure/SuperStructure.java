@@ -10,12 +10,12 @@ import frc.robot.subsystems.SuperStructure.intake.IntakeConstants;
 import frc.robot.subsystems.SuperStructure.wrist.Wrist;
 import frc.robot.util.BlackholePlanner.Trajectory2d;
 
-public class SuperStructure extends SubsystemBase{
-     private final Arm arm;
+public class SuperStructure extends SubsystemBase {
+  private final Arm arm;
   private final Elevator elevator;
   private final Wrist wrist;
   private final Intake intake;
-  
+
   private upperFeedFoward upperfeedfoward;
   // load trajectories
   Trajectory2d Rest2Gnd = new Trajectory2d("Rest2GndIntake", 1);
@@ -34,13 +34,16 @@ public class SuperStructure extends SubsystemBase{
 
   Trajectory2d RemoveL2 = new Trajectory2d("RemoveL2", 1);
   Trajectory2d RemoveL3 = new Trajectory2d("RemoveL3", 1);
-     public SuperStructure(Arm arm, Elevator elevator, Wrist wrist, Intake intake){
+
+  public SuperStructure(Arm arm, Elevator elevator, Wrist wrist, Intake intake) {
     this.arm = arm;
     this.elevator = elevator;
     this.wrist = wrist;
     this.intake = intake;
-    this.upperfeedfoward = new upperFeedFoward(ArmConstants._armConfig, ElevatorConstants._elevatorConfig, IntakeConstants._intakeConfig);
-
+    this.upperfeedfoward =
+        new upperFeedFoward(
+            ArmConstants._armConfig,
+            ElevatorConstants._elevatorConfig,
+            IntakeConstants._intakeConfig);
   }
-  
 }

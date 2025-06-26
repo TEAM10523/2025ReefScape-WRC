@@ -7,25 +7,24 @@ import frc.robot.subsystems.SuperStructure.wrist.WristIO.WristIOInputs;
 
 public class Wrist extends SubsystemBase {
   private final WristIO io;
-  private final  WristIOInputs inputs = new  WristIOInputs();
+  private final WristIOInputs inputs = new WristIOInputs();
 
-  
   public double goal = 0.0;
 
   public Wrist(WristIO io) {
     this.io = io;
     io.setPID(
-      WristConstants.kp,
-      WristConstants.Ki,
-      WristConstants.Kd,
-      WristConstants.Ks,
-      WristConstants.Kv,
-      WristConstants.Ka,
-      WristConstants.acceleration,
-      WristConstants.velocity);
+        WristConstants.kp,
+        WristConstants.Ki,
+        WristConstants.Kd,
+        WristConstants.Ks,
+        WristConstants.Kv,
+        WristConstants.Ka,
+        WristConstants.acceleration,
+        WristConstants.velocity);
   }
 
-   public enum WristState{
+  public enum WristState {
     Stop,
     Test,
     RunGoal
@@ -33,12 +32,15 @@ public class Wrist extends SubsystemBase {
 
   public static WristState wristState = WristState.Stop;
 
-  public void runSetPoint(double angleRads, double omegaRadPerSec, double alphaRadsPerSecSquared, double torque) {
+  public void runSetPoint(
+      double angleRads, double omegaRadPerSec, double alphaRadsPerSecSquared, double torque) {
     io.runPositionSetpoint(angleRads, omegaRadPerSec, alphaRadsPerSecSquared, torque);
   }
 
   public void runMotionMagicPosition(double angleRads) {
-    goal = MathUtil.clamp(angleRads, WristConstants.wristMinimumAngle, WristConstants.wristMaximumAngle);
+    goal =
+        MathUtil.clamp(
+            angleRads, WristConstants.wristMinimumAngle, WristConstants.wristMaximumAngle);
     io.runMotionMagicPosition(goal);
   }
 
@@ -66,18 +68,18 @@ public class Wrist extends SubsystemBase {
     return inputs.wristAppliedVolts;
   }
 
-  public boolean atGoal(){
-    return Math.abs(goal-getAngleRads())<WristConstants.wristTolerance;
+  public boolean atGoal() {
+    return Math.abs(goal - getAngleRads()) < WristConstants.wristTolerance;
   }
 
-  public void setState(WristState state){
-      wristState=state;
+  public void setState(WristState state) {
+    wristState = state;
   }
 
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-     switch (wristState) {
+    switch (wristState) {
       case RunGoal -> {
         // runMotionMagicPosition(WristConstants.wristIntakeAngle);
       }

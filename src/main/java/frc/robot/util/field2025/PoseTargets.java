@@ -9,19 +9,20 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 /** Add your docs here. */
 public class PoseTargets {
-    
-    public static pairReef getNearestPairReef(Pose2d robotPose){
-        pairReef nearestPairReef = new pairReef(null, null, 2);
-        double shortestDistance = 1e+120;
-        for(pairReef reef: FieldConstants.pairReefs){
-            pairReef inversedReed = FieldPoseConversions.inversePairReefUsingAlliance(reef, Alliance.Blue);
-            double distance = robotPose.getTranslation().getDistance(inversedReed.pairReefPose().getTranslation());
-            if(distance < shortestDistance){
-                nearestPairReef = inversedReed;
-                shortestDistance = distance;
-            }
-        }
-        return nearestPairReef;
-    }
 
+  public static pairReef getNearestPairReef(Pose2d robotPose) {
+    pairReef nearestPairReef = new pairReef(null, null, 2);
+    double shortestDistance = 1e+120;
+    for (pairReef reef : FieldConstants.pairReefs) {
+      pairReef inversedReed =
+          FieldPoseConversions.inversePairReefUsingAlliance(reef, Alliance.Blue);
+      double distance =
+          robotPose.getTranslation().getDistance(inversedReed.pairReefPose().getTranslation());
+      if (distance < shortestDistance) {
+        nearestPairReef = inversedReed;
+        shortestDistance = distance;
+      }
+    }
+    return nearestPairReef;
+  }
 }
