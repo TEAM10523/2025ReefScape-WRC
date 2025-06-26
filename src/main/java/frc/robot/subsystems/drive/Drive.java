@@ -50,6 +50,8 @@ import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.LocalADStarAK;
+import frc.robot.util.swerve.SlipLimiter;
+
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -105,6 +107,9 @@ public class Drive extends SubsystemBase {
       };
   private SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
+  
+  private SlipLimiter slipLimiter;
+  private ChassisSpeeds preSpeeds;
 
   public Drive(
       GyroIO gyroIO,
@@ -156,6 +161,9 @@ public class Drive extends SubsystemBase {
                 (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
             new SysIdRoutine.Mechanism(
                 (voltage) -> runCharacterization(voltage.in(Volts)), null, this));
+
+    slipLimiter = new SlipLimiter();
+    preSpeeds = new ChassisSpeeds(0, 0, 0);
   }
 
   @Override
@@ -223,6 +231,11 @@ public class Drive extends SubsystemBase {
    * @param speeds Speeds in meters/sec
    */
   public void runVelocity(ChassisSpeeds speeds) {
+
+    speeds = slipLimiter.getChassisSpeeds(Constants.g * TunerConstants.wheelFrictionCoeff * TunerConstants.controlLoopCycleTime, 
+      TunerConstants.kSpeedAt12Volts.magnitude(), preSpeeds, speeds);
+    preSpeeds = speeds;
+
     // Calculate module setpoints
     ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
     SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);

@@ -13,6 +13,8 @@
 
 package frc.robot;
 
+import java.rmi.server.RemoteStub;
+
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
@@ -34,4 +36,22 @@ public final class Constants {
     /** Replaying from a log file. */
     REPLAY
   }
+
+  public enum Location {
+    Shanghai(9.794),
+    Hainan(9.783),
+    Huston(9.79),
+    California(9.796);
+
+    public final double gravity;
+
+    Location(double gravity){
+      this.gravity = gravity;
+    }
+  }
+
+  public static final Location location = Location.Shanghai;
+
+  public static final double g = location.gravity;
+
 }
