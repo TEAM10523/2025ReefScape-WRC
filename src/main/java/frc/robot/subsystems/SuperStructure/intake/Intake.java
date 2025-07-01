@@ -3,6 +3,7 @@ package frc.robot.subsystems.SuperStructure.intake;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.SuperStructure.intake.IntakeIO.IntakeIOInputs;
+import org.littletonrobotics.junction.AutoLogOutput;
 
 public class Intake extends SubsystemBase {
   private final IntakeIO io;
@@ -27,7 +28,7 @@ public class Intake extends SubsystemBase {
     Stop
   }
 
-  public static IntakeState intakeState = IntakeState.Stop;
+  @AutoLogOutput public IntakeState intakeState = IntakeState.Stop;
 
   public void runSetPoint(double velocityRadsPerSec, double acceleration) {
     io.runVelocitySetpoint(velocityRadsPerSec, acceleration);

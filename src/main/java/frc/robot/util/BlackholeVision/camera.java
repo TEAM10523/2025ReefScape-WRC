@@ -110,10 +110,10 @@ public class camera {
     double[] poseList = multiTagPose_subscriber.get(new double[] {0, 0, 0, 0, 0, 0});
     double error = multiTagError_subscriber.get(-1);
 
-    Matrix<N3, N1> stdDevs = new Matrix<>(VecBuilder.fill(
-      Math.pow(error * 100, 2), 
-      Math.pow(error * 100, 2), 
-      Math.pow(error * 1000, 2)));
+    Matrix<N3, N1> stdDevs =
+        new Matrix<>(
+            VecBuilder.fill(
+                Math.pow(error * 100, 2), Math.pow(error * 100, 2), Math.pow(error * 1000, 2)));
     if (error < 0) {
       stdDevs = null;
     }

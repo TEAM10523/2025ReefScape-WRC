@@ -20,10 +20,24 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.SuperStructureMotionMagicCommand;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.SuperStructure.SuperStructure;
+import frc.robot.subsystems.SuperStructure.arm.Arm;
+import frc.robot.subsystems.SuperStructure.arm.ArmIO;
+import frc.robot.subsystems.SuperStructure.arm.ArmIOKraken;
+import frc.robot.subsystems.SuperStructure.elevator.Elevator;
+import frc.robot.subsystems.SuperStructure.elevator.ElevatorIO;
+import frc.robot.subsystems.SuperStructure.elevator.ElevatorIOKrakenFOC;
+import frc.robot.subsystems.SuperStructure.intake.Intake;
+import frc.robot.subsystems.SuperStructure.intake.IntakeIO;
+import frc.robot.subsystems.SuperStructure.intake.IntakeIOKrakenFOC;
+import frc.robot.subsystems.SuperStructure.wrist.Wrist;
+import frc.robot.subsystems.SuperStructure.wrist.WristIO;
+import frc.robot.subsystems.SuperStructure.wrist.WristIOKrakenFOC;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -32,7 +46,6 @@ import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
-
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -44,11 +57,16 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
+  private final Arm m_Arm;
+  private final Elevator m_Elevator;
+  private final Intake m_Intake;
+  private final Wrist m_Wrist;
+  public final SuperStructure m_SuperStructure;
 
   private final Vision vision;
 
   // Controller
-  private final CommandXboxController controller = new CommandXboxController(0);
+  private final CommandPS5Controller controller = new CommandPS5Controller(0);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -66,6 +84,11 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.BackLeft),
                 new ModuleIOTalonFX(TunerConstants.BackRight));
         vision = new Vision(VisionConstants.ios, VisionConstants.configs, drive);
+        m_Arm = new Arm(new ArmIOKraken());
+        m_Elevator = new Elevator(new ElevatorIOKrakenFOC());
+        m_Intake = new Intake(new IntakeIOKrakenFOC());
+        m_Wrist = new Wrist(new WristIOKrakenFOC());
+        m_SuperStructure = new SuperStructure(m_Arm, m_Elevator, m_Wrist, m_Intake);
         break;
 
       case SIM:
@@ -78,6 +101,11 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight));
         vision = null;
+        m_Arm = new Arm(new ArmIO() {});
+        m_Elevator = new Elevator(new ElevatorIO() {});
+        m_Intake = new Intake(new IntakeIO() {});
+        m_Wrist = new Wrist(new WristIO() {});
+        m_SuperStructure = new SuperStructure(m_Arm, m_Elevator, m_Wrist, m_Intake);
         break;
 
       default:
@@ -90,6 +118,11 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
         vision = null;
+        m_Arm = new Arm(new ArmIO() {});
+        m_Elevator = new Elevator(new ElevatorIO() {});
+        m_Intake = new Intake(new IntakeIO() {});
+        m_Wrist = new Wrist(new WristIO() {});
+        m_SuperStructure = new SuperStructure(m_Arm, m_Elevator, m_Wrist, m_Intake);
         break;
     }
 
@@ -123,17 +156,19 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    // m_SuperStructure.setDefaultCommand(
+    //     new InstantCommand(() -> m_SuperStructure.SetMotionMagic(0, 0, 0)));
     // Default command, normal field-relative drive
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
+            () -> controller.getLeftY(),
+            () -> controller.getLeftX(),
             () -> -controller.getRightX()));
 
     // Lock to 0° when A button is held
     controller
-        .a()
+        .cross()
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 drive,
@@ -142,18 +177,12 @@ public class RobotContainer {
                 () -> new Rotation2d()));
 
     // Switch to X pattern when X button is pressed
-    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    controller.square().whileTrue(new SuperStructureMotionMagicCommand(0.9, Math.PI / 2., 0, this));
 
     // Reset gyro to 0° when B button is pressed
     controller
-        .b()
-        .onTrue(
-            Commands.runOnce(
-                    () ->
-                        drive.setPose(
-                            new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
-                    drive)
-                .ignoringDisable(true));
+        .circle()
+        .onTrue(Commands.runOnce(() -> drive.setPose(new Pose2d()), drive).ignoringDisable(true));
   }
 
   /**

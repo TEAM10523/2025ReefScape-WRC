@@ -51,7 +51,6 @@ import frc.robot.Constants.Mode;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.LocalADStarAK;
 import frc.robot.util.swerve.SlipLimiter;
-
 import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -351,7 +350,7 @@ public class Drive extends SubsystemBase {
     return getPose().getRotation();
   }
 
-  public Optional<Pose2d> getPoseSample(double timestampeSec){
+  public Optional<Pose2d> getPoseSample(double timestampeSec) {
     return poseEstimator.sampleAt(timestampeSec);
   }
 

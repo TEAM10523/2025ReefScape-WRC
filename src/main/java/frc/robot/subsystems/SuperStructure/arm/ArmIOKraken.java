@@ -117,6 +117,7 @@ public class ArmIOKraken implements ArmIO {
   @Override
   public void runPositionSetpoint(
       double angleRads, double omegaRadPerSec, double alphaRadsPerSecSquared, double torque) {
+
     armMotor.setControl(
         positionControl
             .withPosition(angleRads / (2 * Math.PI))

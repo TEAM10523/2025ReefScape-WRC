@@ -132,8 +132,9 @@ public class ElevatorIOKrakenFOC implements ElevatorIO {
   @Override
   public void runMotionMagicPosition(
       double positionMeters, double velocityMetersPerSec, double torque) {
-    motionMagicFOC.Position = positionMeters / (2 * Math.PI * elevatorRadius);
-    elevatorMotor.setControl(motionMagicFOC);
+    // motionMagicFOC.Position = positionMeters / (2 * Math.PI * elevatorRadius);
+    elevatorMotor.setControl(
+        motionMagicFOC.withPosition(positionMeters / (2 * Math.PI * elevatorRadius)));
   }
 
   @Override

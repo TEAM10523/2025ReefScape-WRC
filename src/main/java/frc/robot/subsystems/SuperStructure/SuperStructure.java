@@ -8,7 +8,9 @@ import frc.robot.subsystems.SuperStructure.elevator.ElevatorConstants;
 import frc.robot.subsystems.SuperStructure.intake.Intake;
 import frc.robot.subsystems.SuperStructure.intake.IntakeConstants;
 import frc.robot.subsystems.SuperStructure.wrist.Wrist;
+import frc.robot.util.BlackholePlanner.Setpoint2d;
 import frc.robot.util.BlackholePlanner.Trajectory2d;
+import org.littletonrobotics.junction.AutoLogOutput;
 
 public class SuperStructure extends SubsystemBase {
   private final Arm arm;
@@ -34,6 +36,7 @@ public class SuperStructure extends SubsystemBase {
 
   Trajectory2d RemoveL2 = new Trajectory2d("RemoveL2", 1);
   Trajectory2d RemoveL3 = new Trajectory2d("RemoveL3", 1);
+  @AutoLogOutput double[] torque;
 
   public SuperStructure(Arm arm, Elevator elevator, Wrist wrist, Intake intake) {
     this.arm = arm;
@@ -45,5 +48,34 @@ public class SuperStructure extends SubsystemBase {
             ArmConstants._armConfig,
             ElevatorConstants._elevatorConfig,
             IntakeConstants._intakeConfig);
+  }
+
+  public void SetSetpoint2d(Setpoint2d _Setpoint2d, double wristAngle) {
+    torque =
+        upperfeedfoward.toMotorTorque(
+            arm.getAngleRads(),
+            elevator.getPositionMeters(),
+            _Setpoint2d.a0,
+            arm.getOmegaRadPerSec(),
+            _Setpoint2d.a1);
+    // torques[0]就是armtorque
+    // torques[1]就是liftorque
+    elevator.runSetPoint(_Setpoint2d.x0, _Setpoint2d.v0, _Setpoint2d.a0, torque[0]);
+    arm.runSetPoint(_Setpoint2d.x1, _Setpoint2d.v1, _Setpoint2d.a1, torque[1]);
+    wrist.runMotionMagicPosition(wristAngle);
+  }
+
+  public void SetMotionMagic(double elevatorHeight, double armAngle, double wristAngle) {
+    torque =
+        upperfeedfoward.toMotorTorque(
+            arm.getAngleRads(), elevator.getPositionMeters(), 0, arm.getOmegaRadPerSec(), 0);
+    elevator.runMotionMagicPosition(elevatorHeight, 0, torque[0]);
+    arm.runMotionMagicPosition(armAngle, 0, torque[1]);
+    wrist.runMotionMagicPosition(wristAngle);
+  }
+
+  public boolean atGoal(
+      double _TargetElevatorHeight, double _TargetArmAngle, double _TargetWristAngle) {
+    return false;
   }
 }

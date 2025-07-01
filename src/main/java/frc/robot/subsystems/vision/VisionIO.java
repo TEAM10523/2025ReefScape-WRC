@@ -1,17 +1,15 @@
 package frc.robot.subsystems.vision;
 
-import java.util.HashMap;
-
 import frc.robot.util.BlackholeVision.config;
 import frc.robot.util.BlackholeVision.poseObservation;
+import java.util.HashMap;
 
 public interface VisionIO {
-    class VisionInputs {
-        poseObservation[] poseObservations = new poseObservation[0];
-    }
+  class VisionInputs {
+    poseObservation[] poseObservations = new poseObservation[0];
+  }
 
-    default void setConfig(HashMap<String, config> configs){}
+  default void setConfig(HashMap<String, config> configs) {}
 
-    default void updateInputs(VisionInputs inputs) {}
-
+  default void updateInputs(VisionInputs inputs) {}
 }

@@ -1,9 +1,9 @@
 package frc.robot.subsystems.SuperStructure.wrist;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.SuperStructure.wrist.WristIO.WristIOInputs;
+import org.littletonrobotics.junction.AutoLogOutput;
 
 public class Wrist extends SubsystemBase {
   private final WristIO io;
@@ -26,15 +26,25 @@ public class Wrist extends SubsystemBase {
 
   public enum WristState {
     Stop,
-    Test,
-    RunGoal
+    MotionMagicToPosition,
+    FollowingPath
   }
-
-  public static WristState wristState = WristState.Stop;
+  // These variables are used for logging and telementry, they don't actually participate in the
+  // calculation and the running of the robot
+  @AutoLogOutput public static WristState wristState = WristState.Stop;
+  @AutoLogOutput private double wristTargetPositionRadian = 0;
+  @AutoLogOutput private double wristTargetOmegaRadiansPerSec = 0;
+  @AutoLogOutput private double wristFeedForwardTorque = 0;
+  @AutoLogOutput private double wristTargetAlphaRadiansPerSec2 = 0;
 
   public void runSetPoint(
       double angleRads, double omegaRadPerSec, double alphaRadsPerSecSquared, double torque) {
     io.runPositionSetpoint(angleRads, omegaRadPerSec, alphaRadsPerSecSquared, torque);
+    wristTargetPositionRadian = angleRads;
+    wristTargetOmegaRadiansPerSec = omegaRadPerSec;
+    wristTargetAlphaRadiansPerSec2 = alphaRadsPerSecSquared;
+    wristFeedForwardTorque = torque;
+    wristState = WristState.FollowingPath;
   }
 
   public void runMotionMagicPosition(double angleRads) {
@@ -42,6 +52,8 @@ public class Wrist extends SubsystemBase {
         MathUtil.clamp(
             angleRads, WristConstants.wristMinimumAngle, WristConstants.wristMaximumAngle);
     io.runMotionMagicPosition(goal);
+    wristTargetPositionRadian = angleRads;
+    wristState = WristState.MotionMagicToPosition;
   }
 
   public void runVolts(double volts) {
@@ -72,30 +84,14 @@ public class Wrist extends SubsystemBase {
     return Math.abs(goal - getAngleRads()) < WristConstants.wristTolerance;
   }
 
-  public void setState(WristState state) {
-    wristState = state;
-  }
-
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    switch (wristState) {
-      case RunGoal -> {
-        // runMotionMagicPosition(WristConstants.wristIntakeAngle);
-      }
-      case Test -> {
-        runVolts(WristConstants.testVolts);
-      }
-      case Stop -> {
-        stop();
-      }
-      default -> {}
-    }
 
     // SmartDashboard.putNumber("WristOmegaRadPerSec()", getOmegaRadPerSec());
     // SmartDashboard.putBoolean("atGoal", atGoal());
-    SmartDashboard.putNumber("WristAngleRads", getAngleRads());
+    // SmartDashboard.putNumber("WristAngleRads", getAngleRads());
     // SmartDashboard.putNumber("WristWristAppliedVolts", getAlphaRadsPerSecSquared());
-    SmartDashboard.putString("WristState", wristState.toString());
+    // SmartDashboard.putString("WristState", wristState.toString());
   }
 }

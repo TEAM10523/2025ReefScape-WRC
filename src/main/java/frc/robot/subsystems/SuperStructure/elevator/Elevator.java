@@ -4,6 +4,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.SuperStructure.elevator.ElevatorIO.ElevatorIOInputs;
+import org.littletonrobotics.junction.AutoLogOutput;
 
 public class Elevator extends SubsystemBase {
   private final ElevatorIO io;
@@ -26,16 +27,25 @@ public class Elevator extends SubsystemBase {
   }
 
   public enum ElevatorState {
-    Stop,
-    Test_UP,
-    Test_DOWN,
-    RunGoal
+    FollowingPath,
+    MotionMagicToPosition,
+    Volt,
+    Stop
   }
 
-  public ElevatorState elevatorState = ElevatorState.Stop;
+  @AutoLogOutput public ElevatorState elevatorState = ElevatorState.Stop;
+  @AutoLogOutput private double elevatorTargetHeight = 0;
+  @AutoLogOutput private double elevatorTargetVelocity = 0;
+  @AutoLogOutput private double elevatorFeedForwardTorque = 0;
+  @AutoLogOutput private double elevatorTargetAcceleration = 0;
 
   public void runSetPoint(
       double positionMeters, double velocityMetersPerSec, double acceleration, double torque) {
+    elevatorTargetHeight = positionMeters;
+    elevatorTargetVelocity = velocityMetersPerSec;
+    elevatorTargetAcceleration = acceleration;
+    elevatorFeedForwardTorque = torque;
+    elevatorState = ElevatorState.FollowingPath;
     io.runPositionSetpoint(positionMeters, velocityMetersPerSec, acceleration, torque);
   }
 
@@ -46,7 +56,12 @@ public class Elevator extends SubsystemBase {
             positionMeters,
             ElevatorConstants.elevatorMinimumPositin,
             ElevatorConstants.elevatorMaximumPositin);
+    elevatorState = ElevatorState.MotionMagicToPosition;
     io.runMotionMagicPosition(goal, velocityMetersPerSec, torque);
+    elevatorTargetHeight = positionMeters;
+    elevatorTargetVelocity = velocityMetersPerSec;
+    elevatorFeedForwardTorque = torque;
+    elevatorState = ElevatorState.MotionMagicToPosition;
   }
 
   public void resetPosition(double x) {
@@ -54,6 +69,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public void runVolts(double volts) {
+    elevatorState = ElevatorState.Volt;
     io.runVolts(volts);
   }
 
@@ -81,28 +97,9 @@ public class Elevator extends SubsystemBase {
     return Math.abs(goal - getPositionMeters()) < ElevatorConstants.elevatorTolerance;
   }
 
-  public void setState(ElevatorState state) {
-    elevatorState = state;
-  }
-
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    switch (elevatorState) {
-      case RunGoal -> {
-        // runMotionMagicPosition(ElevatorConstants.elevatorIntakePositin, 0, 0);//TODO
-      }
-      case Test_UP -> {
-        // runVolts(ElevatorConstants.testUpVolts);
-      }
-      case Test_DOWN -> {
-        // runVolts(ElevatorConstants.testDownVolts);
-      }
-      case Stop -> {
-        stop();
-      }
-      default -> {}
-    }
 
     // SmartDashboard.putNumber("ElevatorVegetVelocityMetersPerSec()", getVelocityMetersPerSec());
     // SmartDashboard.putBoolean("atGoal", atGoal());

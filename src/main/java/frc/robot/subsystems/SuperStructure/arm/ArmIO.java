@@ -28,7 +28,7 @@ public interface ArmIO {
 
   /** Run to arm positionsetpoint with motionmagic */
   default void runMotionMagicPosition(double angleRads, double omegaRadsPerSec, double torque) {}
-  /** Configure arm PID */
+
   default void setPID(
       double kP,
       double kI,
