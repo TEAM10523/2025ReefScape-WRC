@@ -51,6 +51,8 @@ import frc.robot.Constants.Mode;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.LocalADStarAK;
 import frc.robot.util.swerve.SlipLimiter;
+
+import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -347,6 +349,10 @@ public class Drive extends SubsystemBase {
   /** Returns the current odometry rotation. */
   public Rotation2d getRotation() {
     return getPose().getRotation();
+  }
+
+  public Optional<Pose2d> getPoseSample(double timestampeSec){
+    return poseEstimator.sampleAt(timestampeSec);
   }
 
   /** Resets the current odometry pose. */
