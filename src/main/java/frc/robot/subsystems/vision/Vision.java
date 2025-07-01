@@ -43,7 +43,7 @@ public class Vision extends SubsystemBase {
 
     poseObservation[] poseObservations = getPoseObservations();
     for(poseObservation poseObservation : poseObservations){
-      if(poseObservation.stdDevs == null){
+      if(poseObservation == null){
         continue;
       }
 

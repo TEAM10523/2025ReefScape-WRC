@@ -117,11 +117,11 @@ public class camera {
       Math.pow(error * 100, 2), 
       Math.pow(error * 1000, 2)));
     if (error < 0) {
-      stdDevs = null;
+      return null;
     }
     if(prePoseList != null){
       if(prePoseList.equals(poseList)){
-        stdDevs = null;
+        return null;
       }
     }
     prePoseList = poseList;
