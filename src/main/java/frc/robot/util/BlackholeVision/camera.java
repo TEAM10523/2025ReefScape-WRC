@@ -35,6 +35,8 @@ public class camera {
 
   String cameraPort;
 
+  double[] prePoseList = null;
+  
   public camera(String cameraPort, config cameraConfig) {
     this.cameraPort = cameraPort;
     this.cameraConfig = cameraConfig;
@@ -115,8 +117,14 @@ public class camera {
             VecBuilder.fill(
                 Math.pow(error * 100, 2), Math.pow(error * 100, 2), Math.pow(error * 1000, 2)));
     if (error < 0) {
-      stdDevs = null;
+      return null;
     }
+    if(prePoseList != null){
+      if(prePoseList.equals(poseList)){
+        return null;
+      }
+    }
+    prePoseList = poseList;
 
     double latency = latency_subscriber.get(0); // TODO
     double FPGATimestamp = Timer.getFPGATimestamp() - 0.25;
