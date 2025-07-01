@@ -35,6 +35,8 @@ public class camera {
 
   String cameraPort;
 
+  double[] prePoseList = null;
+  
   public camera(String cameraPort, config cameraConfig) {
     this.cameraPort = cameraPort;
     this.cameraConfig = cameraConfig;
@@ -117,6 +119,12 @@ public class camera {
     if (error < 0) {
       stdDevs = null;
     }
+    if(prePoseList != null){
+      if(prePoseList.equals(poseList)){
+        stdDevs = null;
+      }
+    }
+    prePoseList = poseList;
 
     double latency = latency_subscriber.get(0); // TODO
     double FPGATimestamp = Timer.getFPGATimestamp() - 0.25;
