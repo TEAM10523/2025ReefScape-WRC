@@ -56,7 +56,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  */
 public class RobotContainer {
   // Subsystems
-  private final Drive drive;
+  public final Drive drive;
   private final Arm m_Arm;
   private final Elevator m_Elevator;
   private final Intake m_Intake;

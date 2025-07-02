@@ -36,7 +36,7 @@ public class camera {
   String cameraPort;
 
   double[] prePoseList = null;
-  
+
   public camera(String cameraPort, config cameraConfig) {
     this.cameraPort = cameraPort;
     this.cameraConfig = cameraConfig;
@@ -119,8 +119,8 @@ public class camera {
     if (error < 0) {
       return null;
     }
-    if(prePoseList != null){
-      if(prePoseList.equals(poseList)){
+    if (prePoseList != null) {
+      if (prePoseList.equals(poseList)) {
         return null;
       }
     }
