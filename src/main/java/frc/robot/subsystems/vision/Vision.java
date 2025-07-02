@@ -4,12 +4,15 @@
 
 package frc.robot.subsystems.vision;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.VisionIO.VisionInputs;
 import frc.robot.util.BlackholeVision.config;
 import frc.robot.util.BlackholeVision.poseObservation;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class Vision extends SubsystemBase {
   /** Creates a new Vision. */
@@ -40,14 +43,23 @@ public class Vision extends SubsystemBase {
       visionIOs[i].updateInputs(visionInputs[i]);
     }
 
+    ArrayList<Double> visionPoses = new ArrayList<>();
+    ArrayList<Double> rejectedVisionPoses = new ArrayList<>();
+
     poseObservation[] poseObservations = getPoseObservations();
-    for(poseObservation poseObservation : poseObservations){
-      if(poseObservation == null){
+    for (poseObservation poseObservation : poseObservations) {
+      if (poseObservation == null) {
         continue;
       }
 
       if (Math.abs(poseObservation.pose.getZ()) > VisionConstants.heightTolerance
           || Math.abs(poseObservation.pose.getRotation().getY()) > VisionConstants.pitchTolerance) {
+        rejectedVisionPoses.addAll(
+            new ArrayList<Double>(
+                List.of(
+                    poseObservation.pose.toPose2d().getX(),
+                    poseObservation.pose.toPose2d().getY(),
+                    poseObservation.pose.toPose2d().getRotation().getRadians())));
         continue;
       }
 
@@ -65,12 +77,30 @@ public class Vision extends SubsystemBase {
                   .minus(poseObservation.pose.toPose2d().getRotation())
                   .getRadians())
           > VisionConstants.yawTolerance) {
+        rejectedVisionPoses.addAll(
+            new ArrayList<Double>(
+                List.of(
+                    poseObservation.pose.toPose2d().getX(),
+                    poseObservation.pose.toPose2d().getY(),
+                    poseObservation.pose.toPose2d().getRotation().getRadians())));
         continue;
       }
+
+      visionPoses.addAll(
+          new ArrayList<Double>(
+              List.of(
+                  poseObservation.pose.toPose2d().getX(),
+                  poseObservation.pose.toPose2d().getY(),
+                  poseObservation.pose.toPose2d().getRotation().getRadians())));
 
       drive.addVisionMeasurement(
           poseObservation.pose.toPose2d(), num_cameras, poseObservation.stdDevs);
     }
+
+    SmartDashboard.putNumberArray(
+        "visionPose", visionPoses.toArray(new Double[visionPoses.size()]));
+    SmartDashboard.putNumberArray(
+        "rejectedVisionPoses", rejectedVisionPoses.toArray(new Double[rejectedVisionPoses.size()]));
   }
 
   public poseObservation[] getPoseObservations() {
