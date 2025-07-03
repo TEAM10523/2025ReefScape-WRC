@@ -1,6 +1,7 @@
 package frc.robot.subsystems.SuperStructure;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.SuperStructureConstants;
 import frc.robot.subsystems.SuperStructure.arm.Arm;
 import frc.robot.subsystems.SuperStructure.arm.ArmConstants;
 import frc.robot.subsystems.SuperStructure.elevator.Elevator;
@@ -74,6 +75,14 @@ public class SuperStructure extends SubsystemBase {
     wrist.runMotionMagicPosition(wristAngle);
   }
 
+  public void SetMotionMagic(SuperStructureConstants.UpperStructureState _upperStructureState) {
+    SetMotionMagic(
+        _upperStructureState.elevator_height,
+        _upperStructureState.arm_theta,
+        _upperStructureState.wrist_theta);
+  }
+
+  @AutoLogOutput
   public boolean atGoal() {
     return elevator.atGoal() && arm.atGoal() && wrist.atGoal();
   }

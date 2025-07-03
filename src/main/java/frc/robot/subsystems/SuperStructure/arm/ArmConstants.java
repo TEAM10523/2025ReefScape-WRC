@@ -15,7 +15,7 @@ public class ArmConstants {
   public static final double Ks = 5;
   public static final double Kv = 0;
   public static final double Ka = 0;
-  public static final double Kf = 0.7; // converting current to torque
+  public static final double Kf = 1; // converting current to torque
   public static final double acceleration = 3;
   public static final double velocity = 1;
 

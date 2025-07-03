@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.SuperStructureConstants;
 import frc.robot.RobotContainer;
 
 public class SuperStructureMotionMagicCommand extends Command {
@@ -34,7 +35,8 @@ public class SuperStructureMotionMagicCommand extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    m_RobotContainer.m_SuperStructure.SetMotionMagic(0, Math.PI / 2., 0);
+    m_RobotContainer.m_SuperStructure.SetMotionMagic(
+        SuperStructureConstants.UpperStructureState.Rest);
   }
 
   @Override

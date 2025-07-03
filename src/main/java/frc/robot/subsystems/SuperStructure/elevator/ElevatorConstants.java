@@ -6,16 +6,16 @@ public class ElevatorConstants {
   public static final double sprocketRadius = 0.0222377;
   public static final double elevatorGearRatio = 9 / 2; // TODO
 
-  public static final double kp = 1;
+  public static final double kp = 100;
   public static final double Ki = 0.0;
-  public static final double Kd = 15; // 0.0;
-  public static final double Kg = 16;
-  public static final double Ks = 0;
+  public static final double Kd = 20; // 0.0;
+  public static final double Kg = 0;
+  public static final double Ks = 15;
   public static final double Kv = 0;
   public static final double Ka = 0.;
-  public static final double Kf = 0;
+  public static final double Kf = 95;
   public static final double acceleration = 12;
-  public static final double velocity = 5;
+  public static final double velocity = 7;
 
   public static final double elevatorMinimumPositin = 0.0; // meters
   public static final double elevatorMaximumPositin = 1.4; // meters

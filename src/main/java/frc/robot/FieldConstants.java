@@ -30,7 +30,7 @@ public class FieldConstants {
     Rotation2d dr = Rotation2d.fromDegrees((double) ((index + 1) / 2) * 60.);
 
     t = t.rotateAround(FieldConstants.BlueReefCenterPos, dr);
-    r = r.plus(dr);
+    r = r.plus(dr.plus(Rotation2d.k180deg));
 
     Pose2d res = new Pose2d(t, r);
 

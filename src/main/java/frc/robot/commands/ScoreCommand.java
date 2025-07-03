@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Constants.AutoAlignConstants;
+import frc.robot.Constants.SuperStructureConstants;
 import frc.robot.RobotContainer;
 import frc.robot.util.BlackholePlanner.Trajectory2d;
 import frc.robot.util.math.MUtils;
@@ -25,9 +26,9 @@ public class ScoreCommand extends Command {
   int m_ReefId;
   Pose2d m_Pose2d;
   int m_Level;
-  PIDController m_PoseXController = new PIDController(6, 0, 0.0);
-  PIDController m_PoseYController = new PIDController(6, 0, 0.0);
-  PIDController m_RotationController = new PIDController(3, 0, 0.0);
+  PIDController m_PoseXController = new PIDController(5, 0, 0.0);
+  PIDController m_PoseYController = new PIDController(5, 0, 0.0);
+  PIDController m_RotationController = new PIDController(5, 0, 0.0);
   double StartTimeStamps;
   Trajectory2d m_Trajectory2d;
   boolean m_isInverted;
@@ -119,7 +120,7 @@ public class ScoreCommand extends Command {
         TargetToRobotVector.rotateBy(m_Pose2d.getRotation().unaryMinus());
     if (TargetBasedVector.getNorm() < AutoAlignConstants.PlacementThreshold)
       m_RobotContainer.m_SuperStructure.SetMotionMagic(
-          m_Trajectory2d.getStartlpoint().a0, m_Trajectory2d.getStartlpoint().a1, 0);
+          SuperStructureConstants.UpperStructureState.ScoreL4);
     if (TargetBasedVector.getNorm() < AutoAlignConstants.ScoreThresholdDistance
         && Math.abs(m_RotationController.getError()) < AutoAlignConstants.ScoreThresholdDirection
         && m_RobotContainer.m_SuperStructure.atGoal()) {
@@ -131,8 +132,9 @@ public class ScoreCommand extends Command {
 
   void Score() {
     double deltaTime = Timer.getFPGATimestamp() - StartTimeStamps;
-    m_RobotContainer.m_SuperStructure.SetSetpoint2d(m_Trajectory2d.getSetpoint(deltaTime), 0);
-    driveToTarget();
+    m_RobotContainer.m_SuperStructure.SetSetpoint2d(
+        m_Trajectory2d.getSetpoint(deltaTime), Math.PI / 2.);
+    m_RobotContainer.drive.stop();
   }
 
   @Override

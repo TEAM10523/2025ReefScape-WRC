@@ -16,7 +16,6 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -178,11 +177,7 @@ public class RobotContainer {
                 () -> new Rotation2d()));
 
     // Switch to X pattern when X button is pressed
-    controller
-        .square()
-        .whileTrue(
-            new ScoreCommand(
-                this, new Pose2d(new Translation2d(), new Rotation2d(Math.PI / 3)), 4, false));
+    controller.square().whileTrue(new ScoreCommand(this, new Pose2d(), 4, false));
 
     // Reset gyro to 0° when B button is pressed
     controller
