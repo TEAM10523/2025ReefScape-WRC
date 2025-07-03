@@ -49,6 +49,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
+import frc.robot.FieldConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.LocalADStarAK;
 import frc.robot.util.swerve.SlipLimiter;
@@ -195,7 +196,10 @@ public class Drive extends SubsystemBase {
       Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
       Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
     }
-
+    Logger.recordOutput(
+        "TargetreefPose2d",
+        FieldConstants.getClosestReefPose(
+            poseEstimator.getEstimatedPosition().getTranslation(), 1, DriverStation.Alliance.Blue));
     // Update odometry
     double[] sampleTimestamps =
         modules[0].getOdometryTimestamps(); // All signals are sampled together
@@ -272,7 +276,13 @@ public class Drive extends SubsystemBase {
       modules[i].runCharacterization(output);
     }
   }
-
+  /**
+   * @param speeds
+   * @param isFieldRelative
+   */
+  public void runVelocityFieldRelative(ChassisSpeeds speeds) {
+    runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getPose().getRotation()));
+  }
   /** Stops the drive. */
   public void stop() {
     runVelocity(new ChassisSpeeds());

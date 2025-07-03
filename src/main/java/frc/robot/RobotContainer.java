@@ -16,6 +16,7 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -23,7 +24,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.SuperStructureMotionMagicCommand;
+import frc.robot.commands.ScoreCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.SuperStructure.SuperStructure;
 import frc.robot.subsystems.SuperStructure.arm.Arm;
@@ -56,7 +57,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  */
 public class RobotContainer {
   // Subsystems
-  private final Drive drive;
+  public final Drive drive;
   private final Arm m_Arm;
   private final Elevator m_Elevator;
   private final Intake m_Intake;
@@ -177,7 +178,11 @@ public class RobotContainer {
                 () -> new Rotation2d()));
 
     // Switch to X pattern when X button is pressed
-    controller.square().whileTrue(new SuperStructureMotionMagicCommand(0.9, Math.PI / 2., 0, this));
+    controller
+        .square()
+        .whileTrue(
+            new ScoreCommand(
+                this, new Pose2d(new Translation2d(), new Rotation2d(Math.PI / 3)), 4, false));
 
     // Reset gyro to 0° when B button is pressed
     controller
