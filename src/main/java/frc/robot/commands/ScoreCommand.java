@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Constants.AutoAlignConstants;
-import frc.robot.Constants.SuperStructureConstants;
+import frc.robot.Constants.SuperStructureConstants.UpperStructureState;
 import frc.robot.RobotContainer;
 import frc.robot.util.BlackholePlanner.Trajectory2d;
 import frc.robot.util.math.MUtils;
@@ -18,6 +18,7 @@ public class ScoreCommand extends Command {
 
   enum State {
     Aligning,
+    Rising,
     Scoring,
     End
   }
@@ -31,6 +32,7 @@ public class ScoreCommand extends Command {
   PIDController m_RotationController = new PIDController(5, 0, 0.0);
   double StartTimeStamps;
   Trajectory2d m_Trajectory2d;
+  Trajectory2d m_RisingTrajectory2d;
   boolean m_isInverted;
 
   public ScoreCommand(
@@ -49,7 +51,8 @@ public class ScoreCommand extends Command {
       m_RotationController.setSetpoint(m_Pose2d.getRotation().getRadians());
     }
     m_Level = _Level;
-    m_Trajectory2d = new Trajectory2d("ScoreL" + _Level, 1);
+    m_Trajectory2d = new Trajectory2d("ScoreL" + _Level, 1.);
+    m_RisingTrajectory2d = new Trajectory2d("Rest2L" + _Level, 1.3);
     m_isInverted = _isinverted;
   }
 
@@ -70,6 +73,9 @@ public class ScoreCommand extends Command {
     switch (m_State) {
       case Aligning:
         Align();
+        break;
+      case Rising:
+        Rise();
         break;
       case Scoring:
         Score();
@@ -118,12 +124,29 @@ public class ScoreCommand extends Command {
             m_RobotContainer.drive.getPose().getY() - m_Pose2d.getY());
     Translation2d TargetBasedVector =
         TargetToRobotVector.rotateBy(m_Pose2d.getRotation().unaryMinus());
-    if (TargetBasedVector.getNorm() < AutoAlignConstants.PlacementThreshold)
-      m_RobotContainer.m_SuperStructure.SetMotionMagic(
-          SuperStructureConstants.UpperStructureState.ScoreL4);
+    if (TargetBasedVector.getNorm() < AutoAlignConstants.PlacementThreshold) {
+      m_State = State.Rising;
+      StartTimeStamps = Timer.getFPGATimestamp();
+    }
+    driveToTarget();
+  }
+
+  void Rise() {
+    Translation2d TargetToRobotVector =
+        new Translation2d(
+            m_RobotContainer.drive.getPose().getX() - m_Pose2d.getX(),
+            m_RobotContainer.drive.getPose().getY() - m_Pose2d.getY());
+    Translation2d TargetBasedVector =
+        TargetToRobotVector.rotateBy(m_Pose2d.getRotation().unaryMinus());
+
+    double deltaTime = Timer.getFPGATimestamp() - StartTimeStamps;
+    m_RobotContainer.m_SuperStructure.SetSetpoint2d(
+        m_RisingTrajectory2d.getSetpoint(deltaTime), Math.PI / 2.);
+
     if (TargetBasedVector.getNorm() < AutoAlignConstants.ScoreThresholdDistance
         && Math.abs(m_RotationController.getError()) < AutoAlignConstants.ScoreThresholdDirection
-        && m_RobotContainer.m_SuperStructure.atGoal()) {
+        && m_RobotContainer.m_SuperStructure.atGoal(
+            UpperStructureState.valueOf("ScoreL" + m_Level))) {
       m_State = State.Scoring;
       StartTimeStamps = Timer.getFPGATimestamp();
     }

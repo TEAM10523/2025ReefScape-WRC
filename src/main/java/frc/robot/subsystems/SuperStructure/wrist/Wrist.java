@@ -84,6 +84,10 @@ public class Wrist extends SubsystemBase {
     return Math.abs(goal - getAngleRads()) < WristConstants.wristTolerance;
   }
 
+  public boolean atGoal(double _WristAngle) {
+    return Math.abs(_WristAngle - getAngleRads()) < WristConstants.wristTolerance;
+  }
+
   @Override
   public void periodic() {
     io.updateInputs(inputs);

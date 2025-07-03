@@ -96,6 +96,10 @@ public class Arm extends SubsystemBase {
     return Math.abs(goal - getAngleRads()) < ArmConstants.armTolerance;
   }
 
+  public boolean atGoal(double _ArmAngle) {
+    return Math.abs(_ArmAngle - getAngleRads()) < ArmConstants.armTolerance;
+  }
+
   @Override
   public void periodic() {
     io.updateInputs(inputs);

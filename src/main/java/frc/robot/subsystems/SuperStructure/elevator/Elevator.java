@@ -98,6 +98,10 @@ public class Elevator extends SubsystemBase {
     return Math.abs(goal - getPositionMeters()) < ElevatorConstants.elevatorTolerance;
   }
 
+  public boolean atGoal(double _ElevatorHeight) {
+    return Math.abs(_ElevatorHeight - getPositionMeters()) < ElevatorConstants.elevatorTolerance;
+  }
+
   @Override
   public void periodic() {
     io.updateInputs(inputs);

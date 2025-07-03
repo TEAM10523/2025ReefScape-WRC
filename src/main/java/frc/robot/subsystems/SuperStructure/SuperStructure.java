@@ -86,4 +86,10 @@ public class SuperStructure extends SubsystemBase {
   public boolean atGoal() {
     return elevator.atGoal() && arm.atGoal() && wrist.atGoal();
   }
+
+  public boolean atGoal(SuperStructureConstants.UpperStructureState _State) {
+    return elevator.atGoal(_State.elevator_height)
+        && arm.atGoal(_State.arm_theta)
+        && wrist.atGoal(_State.wrist_theta);
+  }
 }
