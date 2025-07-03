@@ -39,11 +39,15 @@ public final class Constants {
     public static final double kTranslationP = 0.1;
     public static final double kTranslationI = 0.0;
     public static final double kTranslationD = 0.0;
-    public static final double kPositionTolerance = 2.0;
-    public static final double kAngleTolerance = 2.0;
+    public static final double kPositionTolerance = 0.01;
+    public static final double kAngleTolerance = 0.05;
     public static final double kToleranceDeg = 2.0;
-    public static final double kMaxVelocity = 2;
+    public static final double kMaxVelocity = 4;
     public static final double kMaxAngularvelocity = Math.PI;
+    public static final double PlacementThreshold = 1.0;
+    public static final double ScoreThresholdDirection = 0.1;
+    public static final double ScoreThresholdDistance = 0.1;
+    public static final double ScoreThresholdElevator = 0.1;
   }
 
   public class SuperStructureConstants {

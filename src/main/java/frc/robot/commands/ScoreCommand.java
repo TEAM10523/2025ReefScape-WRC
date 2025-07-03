@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -38,15 +39,16 @@ public class ScoreCommand extends Command {
     addRequirements(m_RobotContainer.m_SuperStructure);
     addRequirements(m_RobotContainer.drive);
     m_RotationController.enableContinuousInput(-Math.PI, Math.PI);
-    m_PoseXController.setSetpoint(m_Pose2d.getX());
-    m_PoseYController.setSetpoint(m_Pose2d.getY());
+
+    m_PoseXController.setSetpoint(0);
+    m_PoseYController.setSetpoint(0);
     if (_isinverted) {
       m_RotationController.setSetpoint(m_Pose2d.getRotation().getRadians() + Math.PI);
     } else {
       m_RotationController.setSetpoint(m_Pose2d.getRotation().getRadians());
     }
     m_Level = _Level;
-    m_Trajectory2d = new Trajectory2d("Rest2L" + _Level, 1);
+    m_Trajectory2d = new Trajectory2d("ScoreL" + _Level, 1);
     m_isInverted = _isinverted;
   }
 
@@ -54,6 +56,12 @@ public class ScoreCommand extends Command {
   public void initialize() {
     m_State = State.Aligning;
     StartTimeStamps = Timer.getFPGATimestamp();
+    m_PoseXController.setTolerance(AutoAlignConstants.kPositionTolerance);
+    m_PoseYController.setTolerance(AutoAlignConstants.kPositionTolerance);
+    m_RotationController.setTolerance(AutoAlignConstants.kAngleTolerance);
+    m_PoseXController.reset();
+    m_PoseYController.reset();
+    m_RotationController.reset();
   }
 
   @Override
@@ -70,39 +78,61 @@ public class ScoreCommand extends Command {
     }
   }
 
-  void Align() {
+  void driveToTarget() {
     ChassisSpeeds _ChassisSpeeds = new ChassisSpeeds();
-    _ChassisSpeeds.vxMetersPerSecond =
-        MUtils.numberLimit(
-            -Constants.AutoAlignConstants.kMaxVelocity,
-            Constants.AutoAlignConstants.kMaxVelocity,
-            m_PoseXController.calculate(m_RobotContainer.drive.getPose().getX()));
-    _ChassisSpeeds.vyMetersPerSecond =
-        MUtils.numberLimit(
-            -Constants.AutoAlignConstants.kMaxVelocity,
-            Constants.AutoAlignConstants.kMaxVelocity,
-            m_PoseYController.calculate(m_RobotContainer.drive.getPose().getY()));
+    Translation2d TargetToRobotVector =
+        new Translation2d(
+            m_RobotContainer.drive.getPose().getX() - m_Pose2d.getX(),
+            m_RobotContainer.drive.getPose().getY() - m_Pose2d.getY());
+    Translation2d TargetBasedVector =
+        TargetToRobotVector.rotateBy(m_Pose2d.getRotation().unaryMinus());
+    Translation2d _OutputTranslation2d =
+        new Translation2d(
+            MUtils.numberLimit(
+                -Constants.AutoAlignConstants.kMaxVelocity,
+                Constants.AutoAlignConstants.kMaxVelocity,
+                m_PoseXController.calculate(TargetBasedVector.getX())),
+            MUtils.numberLimit(
+                -Constants.AutoAlignConstants.kMaxVelocity,
+                Constants.AutoAlignConstants.kMaxVelocity,
+                m_PoseYController.calculate(TargetBasedVector.getY())));
+    _OutputTranslation2d = _OutputTranslation2d.rotateBy(m_Pose2d.getRotation());
+
+    _ChassisSpeeds.vxMetersPerSecond = _OutputTranslation2d.getX();
+
+    _ChassisSpeeds.vyMetersPerSecond = _OutputTranslation2d.getY();
     _ChassisSpeeds.omegaRadiansPerSecond =
         MUtils.numberLimit(
-            -Constants.AutoAlignConstants.kMaxVelocity,
-            Constants.AutoAlignConstants.kMaxVelocity,
+            -Constants.AutoAlignConstants.kMaxAngularvelocity,
+            Constants.AutoAlignConstants.kMaxAngularvelocity,
             m_RotationController.calculate(
                 m_RobotContainer.drive.getPose().getRotation().getRadians()));
+    m_RobotContainer.drive.runVelocityFieldRelative(_ChassisSpeeds);
+  }
 
-    m_RobotContainer.m_SuperStructure.SetMotionMagic(
-        m_Trajectory2d.getStartlpoint().a0, m_Trajectory2d.getStartlpoint().a1, 0);
-    m_RobotContainer.drive.runVelocity(_ChassisSpeeds);
-    if (m_PoseXController.getError() < AutoAlignConstants.kPositionTolerance
-        && m_PoseYController.getError() < AutoAlignConstants.kPositionTolerance
-        && m_RotationController.getPositionError() < AutoAlignConstants.kAngleTolerance) {
+  void Align() {
+    Translation2d TargetToRobotVector =
+        new Translation2d(
+            m_RobotContainer.drive.getPose().getX() - m_Pose2d.getX(),
+            m_RobotContainer.drive.getPose().getY() - m_Pose2d.getY());
+    Translation2d TargetBasedVector =
+        TargetToRobotVector.rotateBy(m_Pose2d.getRotation().unaryMinus());
+    if (TargetBasedVector.getNorm() < AutoAlignConstants.PlacementThreshold)
+      m_RobotContainer.m_SuperStructure.SetMotionMagic(
+          m_Trajectory2d.getStartlpoint().a0, m_Trajectory2d.getStartlpoint().a1, 0);
+    if (TargetBasedVector.getNorm() < AutoAlignConstants.ScoreThresholdDistance
+        && Math.abs(m_RotationController.getError()) < AutoAlignConstants.ScoreThresholdDirection
+        && m_RobotContainer.m_SuperStructure.atGoal()) {
       m_State = State.Scoring;
       StartTimeStamps = Timer.getFPGATimestamp();
     }
+    driveToTarget();
   }
 
   void Score() {
     double deltaTime = Timer.getFPGATimestamp() - StartTimeStamps;
     m_RobotContainer.m_SuperStructure.SetSetpoint2d(m_Trajectory2d.getSetpoint(deltaTime), 0);
+    driveToTarget();
   }
 
   @Override

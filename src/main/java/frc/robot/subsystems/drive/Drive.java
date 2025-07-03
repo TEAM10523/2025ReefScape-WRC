@@ -269,7 +269,13 @@ public class Drive extends SubsystemBase {
       modules[i].runCharacterization(output);
     }
   }
-
+  /**
+   * @param speeds
+   * @param isFieldRelative
+   */
+  public void runVelocityFieldRelative(ChassisSpeeds speeds) {
+    runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getPose().getRotation()));
+  }
   /** Stops the drive. */
   public void stop() {
     runVelocity(new ChassisSpeeds());

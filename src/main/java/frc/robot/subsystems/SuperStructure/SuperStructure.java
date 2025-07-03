@@ -74,8 +74,7 @@ public class SuperStructure extends SubsystemBase {
     wrist.runMotionMagicPosition(wristAngle);
   }
 
-  public boolean atGoal(
-      double _TargetElevatorHeight, double _TargetArmAngle, double _TargetWristAngle) {
-    return false;
+  public boolean atGoal() {
+    return elevator.atGoal() && arm.atGoal() && wrist.atGoal();
   }
 }

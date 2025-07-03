@@ -8,8 +8,7 @@ import org.littletonrobotics.junction.AutoLogOutput;
 public class Arm extends SubsystemBase {
   private final ArmIO io;
   private final ArmIOInputs inputs = new ArmIOInputs();
-
-  public double goal = 0.0;
+  @AutoLogOutput public double goal = 0.0;
 
   public Arm(ArmIO io) {
     this.io = io;
@@ -92,6 +91,7 @@ public class Arm extends SubsystemBase {
     return inputs.armAppliedVolts;
   }
 
+  @AutoLogOutput
   public boolean atGoal() {
     return Math.abs(goal - getAngleRads()) < ArmConstants.armTolerance;
   }

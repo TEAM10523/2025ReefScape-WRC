@@ -34,11 +34,12 @@ public class FieldConstants {
 
     Pose2d res = new Pose2d(t, r);
 
-    if (DriverStation.getAlliance().get() == Alliance.Red) {
-      // t = t.rotateAround(FieldConstants.FieldCenter, Rotation2d.fromDegrees(180));
-      // r = r.plus(Rotation2d.fromDegrees(180));
-      res = FieldConstants.rotateAroundCenter(res, FieldConstants.FieldCenter, Rotation2d.k180deg);
-    }
+    // if (DriverStation.getAlliance().get() == Alliance.Red) {
+    //   // t = t.rotateAround(FieldConstants.FieldCenter, Rotation2d.fromDegrees(180));
+    //   // r = r.plus(Rotation2d.fromDegrees(180));
+    //   res = FieldConstants.rotateAroundCenter(res, FieldConstants.FieldCenter,
+    // Rotation2d.k180deg);
+    // }
 
     if (res == null) {
       DriverStation.reportWarning("1111111111111111111", false);
