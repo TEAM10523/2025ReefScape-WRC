@@ -127,7 +127,7 @@ public class camera {
     prePoseList = poseList;
 
     double latency = latency_subscriber.get(0); // TODO
-    double FPGATimestamp = Timer.getFPGATimestamp() - 0.25;
+    double FPGATimestamp = Timer.getFPGATimestamp() - 0.26;
     // double t = multiTagPose_subscriber.getLastChange(); #TODO
     return new poseObservation(
         new Pose3d(

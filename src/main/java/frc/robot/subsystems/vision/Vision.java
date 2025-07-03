@@ -94,7 +94,7 @@ public class Vision extends SubsystemBase {
                   poseObservation.pose.toPose2d().getRotation().getRadians())));
 
       drive.addVisionMeasurement(
-          poseObservation.pose.toPose2d(), num_cameras, poseObservation.stdDevs);
+          poseObservation.pose.toPose2d(), poseObservation.FPGATimestamp, poseObservation.stdDevs);
     }
 
     SmartDashboard.putNumberArray(
