@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Constants.AutoAlignConstants;
 import frc.robot.Constants.SuperStructureConstants.UpperStructureState;
+import frc.robot.subsystems.SuperStructure.wrist.WristConstants;
 import frc.robot.RobotContainer;
 import frc.robot.util.BlackholePlanner.Trajectory2d;
 import frc.robot.util.math.MUtils;
@@ -85,12 +86,23 @@ public class ScoreCommand extends Command {
     }
   }
 
+  void setState(State state){
+    m_State = state;
+  }
+
+  Translation2d getDeltaTranslation(){
+    return new Translation2d(
+        m_RobotContainer.drive.getPose().getX() - m_Pose2d.getX(),
+        m_RobotContainer.drive.getPose().getY() - m_Pose2d.getY());
+  }
+
+  double getDistance2Target(){
+    return getDeltaTranslation().getNorm();
+  }
+
   void driveToTarget() {
     ChassisSpeeds _ChassisSpeeds = new ChassisSpeeds();
-    Translation2d TargetToRobotVector =
-        new Translation2d(
-            m_RobotContainer.drive.getPose().getX() - m_Pose2d.getX(),
-            m_RobotContainer.drive.getPose().getY() - m_Pose2d.getY());
+    Translation2d TargetToRobotVector = getDeltaTranslation();
     Translation2d TargetBasedVector =
         TargetToRobotVector.rotateBy(m_Pose2d.getRotation().unaryMinus());
     Translation2d _OutputTranslation2d =
@@ -118,36 +130,23 @@ public class ScoreCommand extends Command {
   }
 
   void Align() {
-    Translation2d TargetToRobotVector =
-        new Translation2d(
-            m_RobotContainer.drive.getPose().getX() - m_Pose2d.getX(),
-            m_RobotContainer.drive.getPose().getY() - m_Pose2d.getY());
-    Translation2d TargetBasedVector =
-        TargetToRobotVector.rotateBy(m_Pose2d.getRotation().unaryMinus());
-    if (TargetBasedVector.getNorm() < AutoAlignConstants.PlacementThreshold) {
-      m_State = State.Rising;
+    if (getDistance2Target() < AutoAlignConstants.PlacementThreshold) {
+      setState(State.Rising);
       StartTimeStamps = Timer.getFPGATimestamp();
     }
     driveToTarget();
   }
 
   void Rise() {
-    Translation2d TargetToRobotVector =
-        new Translation2d(
-            m_RobotContainer.drive.getPose().getX() - m_Pose2d.getX(),
-            m_RobotContainer.drive.getPose().getY() - m_Pose2d.getY());
-    Translation2d TargetBasedVector =
-        TargetToRobotVector.rotateBy(m_Pose2d.getRotation().unaryMinus());
-
     double deltaTime = Timer.getFPGATimestamp() - StartTimeStamps;
     m_RobotContainer.m_SuperStructure.SetSetpoint2d(
-        m_RisingTrajectory2d.getSetpoint(deltaTime), Math.PI / 2.);
+        m_RisingTrajectory2d.getSetpoint(deltaTime), WristConstants.wristScoringPosition);
 
-    if (TargetBasedVector.getNorm() < AutoAlignConstants.ScoreThresholdDistance
+    if (getDistance2Target() < AutoAlignConstants.ScoreThresholdDistance
         && Math.abs(m_RotationController.getError()) < AutoAlignConstants.ScoreThresholdDirection
         && m_RobotContainer.m_SuperStructure.atGoal(
             UpperStructureState.valueOf("ScoreL" + m_Level))) {
-      m_State = State.Scoring;
+      setState(State.Scoring);
       StartTimeStamps = Timer.getFPGATimestamp();
     }
     driveToTarget();
@@ -156,7 +155,7 @@ public class ScoreCommand extends Command {
   void Score() {
     double deltaTime = Timer.getFPGATimestamp() - StartTimeStamps;
     m_RobotContainer.m_SuperStructure.SetSetpoint2d(
-        m_Trajectory2d.getSetpoint(deltaTime), Math.PI / 2.);
+        m_Trajectory2d.getSetpoint(deltaTime), WristConstants.wristScoringPosition);
     m_RobotContainer.drive.stop();
   }
 
