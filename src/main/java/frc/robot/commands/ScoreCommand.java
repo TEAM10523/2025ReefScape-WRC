@@ -4,12 +4,12 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Constants.AutoAlignConstants;
-import frc.robot.Constants.SuperStructureConstants.UpperStructureState;
-import frc.robot.subsystems.SuperStructure.wrist.WristConstants;
+import frc.robot.FieldConstants;
 import frc.robot.RobotContainer;
 import frc.robot.util.BlackholePlanner.Trajectory2d;
 import frc.robot.util.math.MUtils;
@@ -28,9 +28,9 @@ public class ScoreCommand extends Command {
   int m_ReefId;
   Pose2d m_Pose2d;
   int m_Level;
-  PIDController m_PoseXController = new PIDController(5, 0, 0.0);
-  PIDController m_PoseYController = new PIDController(5, 0, 0.0);
-  PIDController m_RotationController = new PIDController(5, 0, 0.0);
+  PIDController m_PoseXController = new PIDController(3, 0, 0.3);
+  PIDController m_PoseYController = new PIDController(4, 0, 0.3);
+  PIDController m_RotationController = new PIDController(2, 0, 0.0);
   double StartTimeStamps;
   Trajectory2d m_Trajectory2d;
   Trajectory2d m_RisingTrajectory2d;
@@ -55,6 +55,18 @@ public class ScoreCommand extends Command {
     m_Trajectory2d = new Trajectory2d("ScoreL" + _Level, 1.);
     m_RisingTrajectory2d = new Trajectory2d("Rest2L" + _Level, 1.3);
     m_isInverted = _isinverted;
+  }
+
+  public static Command getClosestReefCommand(
+      RobotContainer _RobotContainer, int _LRindex, int level) {
+    return new ScoreCommand(
+        _RobotContainer,
+        FieldConstants.getClosestReefPose(
+            _RobotContainer.drive.getPose().getTranslation(),
+            _LRindex,
+            DriverStation.getAlliance().get()),
+        level,
+        false);
   }
 
   @Override
@@ -140,13 +152,14 @@ public class ScoreCommand extends Command {
   void Rise() {
     double deltaTime = Timer.getFPGATimestamp() - StartTimeStamps;
     m_RobotContainer.m_SuperStructure.SetSetpoint2d(
-        m_RisingTrajectory2d.getSetpoint(deltaTime), WristConstants.wristScoringPosition);
+        m_RisingTrajectory2d.getSetpoint(deltaTime), 1.8);
 
-    if (getDistance2Target() < AutoAlignConstants.ScoreThresholdDistance
-        && Math.abs(m_RotationController.getError()) < AutoAlignConstants.ScoreThresholdDirection
-        && m_RobotContainer.m_SuperStructure.atGoal(
-            UpperStructureState.valueOf("ScoreL" + m_Level))) {
-      setState(State.Scoring);
+    if (
+    // TargetBasedVector.getNorm() < AutoAlignConstants.ScoreThresholdDistance
+    //   && Math.abs(m_RotationController.getError()) < AutoAlignConstants.ScoreThresholdDirection
+    // && m_RobotContainer.m_SuperStructure.atGoal(UpperStructureState.valueOf("ScoreL" + m_Level))
+    m_RobotContainer.controller.getHID().getR2Button()) {
+      m_State = State.Scoring;
       StartTimeStamps = Timer.getFPGATimestamp();
     }
     driveToTarget();
@@ -154,8 +167,7 @@ public class ScoreCommand extends Command {
 
   void Score() {
     double deltaTime = Timer.getFPGATimestamp() - StartTimeStamps;
-    m_RobotContainer.m_SuperStructure.SetSetpoint2d(
-        m_Trajectory2d.getSetpoint(deltaTime), WristConstants.wristScoringPosition);
+    m_RobotContainer.m_SuperStructure.SetSetpoint2d(m_Trajectory2d.getSetpoint(deltaTime), 1.8);
     m_RobotContainer.drive.stop();
   }
 

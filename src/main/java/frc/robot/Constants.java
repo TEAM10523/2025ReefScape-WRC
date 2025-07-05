@@ -40,9 +40,9 @@ public final class Constants {
     public static final double kTranslationI = 0.0;
     public static final double kTranslationD = 0.0;
     public static final double kPositionTolerance = 0.03;
-    public static final double kAngleTolerance = 0.1;
+    public static final double kAngleTolerance = 0.05;
     public static final double kToleranceDeg = 2.0;
-    public static final double kMaxVelocity = 4;
+    public static final double kMaxVelocity = 2.5;
     public static final double kMaxAngularvelocity = Math.PI;
     public static final double PlacementThreshold = 1.0;
     public static final double ScoreThresholdDirection = 0.1;
@@ -58,7 +58,7 @@ public final class Constants {
       ScoreL4(1.4185, 1.865, 1.8),
       RemoveL3(0.694, 2.909464, 1.8),
       RemoveL2(0.758, 2.734, 1.8),
-      GroundIntake(0.01, -0.01, 0),
+      GroundIntake(0.05, -0.15, 0),
       StationIntake(0.27, 1.3, 0),
       VerticalIntake(0.03, 0, 1.8),
       Rest(0, 1.57079, 1.8),
