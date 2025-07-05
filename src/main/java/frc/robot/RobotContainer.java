@@ -20,9 +20,12 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commands.DefaultSuperStructureCommand;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.IntakeCommands;
 import frc.robot.commands.ScoreCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.SuperStructure.SuperStructure;
@@ -46,6 +49,8 @@ import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
+import java.util.Set;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -62,11 +67,12 @@ public class RobotContainer {
   private final Intake m_Intake;
   private final Wrist m_Wrist;
   public final SuperStructure m_SuperStructure;
-
+  @AutoLogOutput private int m_LRIndex = 1;
+  @AutoLogOutput private int m_LevelIndex = 4;
   private final Vision vision;
 
   // Controller
-  private final CommandPS5Controller controller = new CommandPS5Controller(0);
+  public final CommandPS5Controller controller = new CommandPS5Controller(0);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -165,6 +171,7 @@ public class RobotContainer {
             () -> controller.getLeftY(),
             () -> controller.getLeftX(),
             () -> -controller.getRightX()));
+    m_SuperStructure.setDefaultCommand(new DefaultSuperStructureCommand(this));
 
     // Lock to 0° when A button is held
     controller
@@ -177,8 +184,43 @@ public class RobotContainer {
                 () -> new Rotation2d()));
 
     // Switch to X pattern when X button is pressed
-    controller.square().whileTrue(new ScoreCommand(this, new Pose2d(), 4, false));
-
+    controller
+        .povUp()
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  ++m_LevelIndex;
+                  if (m_LevelIndex > 4) m_LevelIndex = 4;
+                }));
+    controller
+        .povDown()
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  --m_LevelIndex;
+                  if (m_LevelIndex < 1) m_LevelIndex = 1;
+                }));
+    controller
+        .povRight()
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  m_LRIndex = 2;
+                }));
+    controller
+        .povLeft()
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  m_LRIndex = 1;
+                }));
+    controller
+        .square()
+        .whileTrue(
+            Commands.defer(
+                () -> ScoreCommand.getClosestReefCommand(this, m_LRIndex, m_LevelIndex),
+                Set.of(m_SuperStructure, drive)));
+    controller.R1().whileTrue(new IntakeCommands(this));
     // Reset gyro to 0° when B button is pressed
     controller
         .circle()

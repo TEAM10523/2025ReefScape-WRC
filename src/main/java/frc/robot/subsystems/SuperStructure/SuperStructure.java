@@ -82,6 +82,14 @@ public class SuperStructure extends SubsystemBase {
         _upperStructureState.wrist_theta);
   }
 
+  public void SetIntakeVoltage(double voltage) {
+    intake.runVolts(voltage);
+  }
+
+  public void SetIntakeSpeed(double speed) {
+    intake.runSetPoint(speed, 0);
+  }
+
   @AutoLogOutput
   public boolean atGoal() {
     return elevator.atGoal() && arm.atGoal() && wrist.atGoal();
