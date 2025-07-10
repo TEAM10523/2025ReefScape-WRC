@@ -19,7 +19,7 @@ public class ArmConstants {
   public static final double acceleration = 3;
   public static final double velocity = 1;
 
-  public static final double armMinimumAngle = Math.toRadians(-5); // radius
+  public static final double armMinimumAngle = Math.toRadians(-30); // radius
   public static final double armMaximumAngle = Math.toRadians(180); // radius
   public static final double armInitialAngle = Math.toRadians(90);
   public static final double armIntakeAngle = Math.toRadians(20);

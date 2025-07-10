@@ -45,8 +45,8 @@ public final class Constants {
     public static final double kMaxVelocity = 2.;
     public static final double kMaxAngularvelocity = Math.PI * 1.2;
     public static final double PlacementThreshold = 1.0;
-    public static final double ScoreThresholdDirection = 0.1;
-    public static final double ScoreThresholdDistance = 0.03;
+    public static final double ScoreThresholdDirection = 0.05;
+    public static final double ScoreThresholdDistance = 0.04;
     public static final double ScoreThresholdElevator = 0.1;
     public static final double pushThreshold = 0.3;
     public static final double pushDistance = 0.2;
@@ -62,7 +62,7 @@ public final class Constants {
       RemoveL2(0.758, 2.734, 1.8),
       GroundIntake(0.05, -0.15, 0),
       StationIntake(0.27, 1.3, 0),
-      VerticalIntake(0.03, 0, 1.8),
+      VerticalIntake(0.05, -0.2, 2),
       Rest(0, 1.57079, 1.8),
       PrepareClimb(0.03, 0, 1.8),
       Climb(0.03, 0, 1.8);

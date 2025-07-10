@@ -503,4 +503,8 @@ public class Drive extends SubsystemBase {
         this // Reference to this subsystem to set requirements
         );
   }
+
+  public Command followPathCommand(String pathName) {
+    return followPathCommand(generatePath(pathName));
+  }
 }

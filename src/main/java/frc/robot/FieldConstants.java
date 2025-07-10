@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 public class FieldConstants {
   // inspired by 6940
   static Translation2d BlueReefCenterPos = new Translation2d(4.489323, 8.0518 / 2.);
-  static Translation2d DReefTranslation12 = new Translation2d(1.23, 0.174);
+  static Translation2d DReefTranslation12 = new Translation2d(1.23, 0.186);
   static Translation2d DAlgaeTranslation12 = new Translation2d(1.309323, 0);
   public static final Translation2d FieldCenter = new Translation2d(17.548225 / 2, 8.0518 / 2.);
 

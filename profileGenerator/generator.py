@@ -49,9 +49,9 @@ for k in range(N):
 # ----- Robot Capability Constraints -----
 # (These can be adjusted for your system.)
 elevator_min_x = 0   # m
-elevator_max_x = 1.47   # m
-elevator_max_vel = 4   # m/s
-elevator_max_acc = 20   # m/s²
+elevator_max_x = 1.51   # m
+elevator_max_vel = 7   # m/s
+elevator_max_acc = 12   # m/s²
 elevator_max_jerk = 1000  # m/s³
 w_elevator_x_cost = 0
 w_elevator_v_cost = 0.0001
@@ -67,17 +67,12 @@ w_arm_v_cost = 0.0001
 w_arm_a_cost = 0
 
 waypoints = [
-    
-    (1.46, 1.865),
-    (1.33,2.5),
-    (0, 1.57079)
+    (0, 1.5708), 
+    (0.6, 1.75), 
+    (0.744, 1.98),   
 
 ]
-# Rest2L4
-    # (0, 1.57079),   
-    
-    # (0.75, 1.57079),
-    # (1.46, 1.865)
+path_Name="Rest2L3.json"
 for k in range(N+1):
     # Elevator velocity and acceleration limits 
     opti.subject_to(elev_x[k] <= elevator_max_x)
@@ -173,7 +168,7 @@ for i in range(N+1):
     })
 
 # Save the profile as a JSON file
-with open("ScoreL4.json", "w") as f:
+with open(path_Name, "w") as f:
     json.dump(profile, f, indent=4)
 
 # ----- Plot the Results -----

@@ -60,7 +60,7 @@ public class ScoreCommand extends Command {
     }
     m_Level = _Level;
     m_Trajectory2d = new Trajectory2d("ScoreL" + _Level, 1.);
-    m_RisingTrajectory2d = new Trajectory2d("Rest2L" + _Level, 1.3);
+    m_RisingTrajectory2d = new Trajectory2d("Rest2L" + _Level, 1.);
     m_isInverted = _isinverted;
   }
 
@@ -164,7 +164,7 @@ public class ScoreCommand extends Command {
       _ChassisSpeeds.omegaRadiansPerSecond = 0;
     }
 
-    if (TargetBasedVector.getNorm() < 0.1 && Math.abs(m_RotationController.getError()) < 0.05)
+    if (TargetBasedVector.getNorm() < 0.03 && Math.abs(m_RotationController.getError()) < 0.05)
       m_isLocked = true;
     m_RobotContainer.drive.runVelocityFieldRelative(_ChassisSpeeds);
   }
@@ -210,6 +210,7 @@ public class ScoreCommand extends Command {
     double deltaTime = Timer.getFPGATimestamp() - StartTimeStamps;
     m_RobotContainer.m_SuperStructure.SetSetpoint2d(m_Trajectory2d.getSetpoint(deltaTime), 1.8);
     m_RobotContainer.drive.stop();
+    if (m_RobotContainer.m_SuperStructure.atGoal(UpperStructureState.Rest)) m_State = State.End;
   }
 
   @Override
@@ -225,6 +226,6 @@ public class ScoreCommand extends Command {
   @Override
   public boolean isFinished() {
 
-    return false;
+    return m_State == State.End;
   }
 }

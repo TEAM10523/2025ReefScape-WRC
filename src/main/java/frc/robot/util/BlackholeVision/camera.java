@@ -49,78 +49,110 @@ public class camera {
 
   String cameraPort;
 
-  public camera(String cameraPort, config cameraConfig){
-      this.cameraPort = cameraPort;
-      this.cameraConfig = cameraConfig;
+  public camera(String cameraPort, config cameraConfig) {
+    this.cameraPort = cameraPort;
+    this.cameraConfig = cameraConfig;
   }
 
-  public String getPort(){
-      return cameraPort;
+  public String getPort() {
+    return cameraPort;
   }
-  public static <T> Stream<T> flattenStream(T[][] arrays) 
-  { 
 
-      // Create an empty list to collect the stream 
-      List<T> list = new ArrayList<>(); 
+  public static <T> Stream<T> flattenStream(T[][] arrays) {
 
-      // Using forEach loop 
-      // convert the array into stream 
-      // and add the stream into list 
-      for (T[] array : arrays) { 
-          Arrays.stream(array) 
-              .forEach(list::add); 
-      } 
+    // Create an empty list to collect the stream
+    List<T> list = new ArrayList<>();
 
-      // Convert the list into Stream and return it 
-      return list.stream(); 
-  } 
+    // Using forEach loop
+    // convert the array into stream
+    // and add the stream into list
+    for (T[] array : arrays) {
+      Arrays.stream(array).forEach(list::add);
+    }
 
-  public void setup(NetworkTable deviceTable){
-      cameraMatrix_publisher = deviceTable.getDoubleArrayTopic(cameraPort + "/cameraMatrix").publish();
-      distortionCoeffs_publisher = deviceTable.getDoubleArrayTopic(cameraPort + "/distortionCoeffs").publish();
-      cameraPose_publisher = deviceTable.getDoubleArrayTopic(cameraPort + "/cameraPose").publish();
-      resolution_publisher = deviceTable.getIntegerArrayTopic(cameraPort + "/resolution").publish();
-      exposure_publisher = deviceTable.getDoubleTopic(cameraPort + "/exposure").publish();
-      gain_publisher = deviceTable.getDoubleTopic(cameraPort + "/gain").publish();
-      maxFPS_publisher = deviceTable.getDoubleTopic(cameraPort + "/maxFPS").publish();
-      enableTag_publisher = deviceTable.getBooleanTopic(cameraPort + "/enableTag").publish();
-      enableObj_publisher = deviceTable.getBooleanTopic(cameraPort + "/enableObj").publish();
+    // Convert the list into Stream and return it
+    return list.stream();
+  }
 
-      multiTagPose_subscriber = deviceTable.getDoubleArrayTopic(cameraPort + "/multiTagPose").subscribe(
-          new double[] {}, PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true));
-      cameraToTagPoses_subscriber = deviceTable.getDoubleArrayTopic(cameraPort + "/cameraToTagPoses").subscribe(
-          new double[] {}, PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true));
-      robotToTagPoses_subscriber = deviceTable.getDoubleArrayTopic(cameraPort + "/robotToTagPoses").subscribe(
-          new double[] {}, PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true));
-      fieldToRobotPoses_subscriber = deviceTable.getDoubleArrayTopic(cameraPort + "/fieldToRobotPoses").subscribe(
-          new double[] {}, PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true));
-      tagErrors_subscriber = deviceTable.getDoubleArrayTopic(cameraPort + "/tagErrors").subscribe(
-          new double[] {}, PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true));
-      ids_subscriber = deviceTable.getDoubleArrayTopic(cameraPort + "/ids").subscribe(
-          new double[] {}, PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true));
-      multiTagError_subscriber = deviceTable.getDoubleTopic(cameraPort + "/multiTagError").subscribe(
-          0, PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true));
-      latency_subscriber = deviceTable.getDoubleTopic(cameraPort + "/latency").subscribe(
-          0, PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true));
+  public void setup(NetworkTable deviceTable) {
+    cameraMatrix_publisher =
+        deviceTable.getDoubleArrayTopic(cameraPort + "/cameraMatrix").publish();
+    distortionCoeffs_publisher =
+        deviceTable.getDoubleArrayTopic(cameraPort + "/distortionCoeffs").publish();
+    cameraPose_publisher = deviceTable.getDoubleArrayTopic(cameraPort + "/cameraPose").publish();
+    resolution_publisher = deviceTable.getIntegerArrayTopic(cameraPort + "/resolution").publish();
+    exposure_publisher = deviceTable.getDoubleTopic(cameraPort + "/exposure").publish();
+    gain_publisher = deviceTable.getDoubleTopic(cameraPort + "/gain").publish();
+    maxFPS_publisher = deviceTable.getDoubleTopic(cameraPort + "/maxFPS").publish();
+    enableTag_publisher = deviceTable.getBooleanTopic(cameraPort + "/enableTag").publish();
+    enableObj_publisher = deviceTable.getBooleanTopic(cameraPort + "/enableObj").publish();
 
-      coralPoses_subscriber = deviceTable.getDoubleArrayTopic(cameraPort + "/coralPoses").subscribe(
-              new double[] {}, PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true));
-      
-      cameraMatrix_publisher.set(cameraConfig.cameraMatrix); 
-      distortionCoeffs_publisher.set(cameraConfig.distortionCoeffs);
+    multiTagPose_subscriber =
+        deviceTable
+            .getDoubleArrayTopic(cameraPort + "/multiTagPose")
+            .subscribe(
+                new double[] {}, PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true));
+    cameraToTagPoses_subscriber =
+        deviceTable
+            .getDoubleArrayTopic(cameraPort + "/cameraToTagPoses")
+            .subscribe(
+                new double[] {}, PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true));
+    robotToTagPoses_subscriber =
+        deviceTable
+            .getDoubleArrayTopic(cameraPort + "/robotToTagPoses")
+            .subscribe(
+                new double[] {}, PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true));
+    fieldToRobotPoses_subscriber =
+        deviceTable
+            .getDoubleArrayTopic(cameraPort + "/fieldToRobotPoses")
+            .subscribe(
+                new double[] {}, PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true));
+    tagErrors_subscriber =
+        deviceTable
+            .getDoubleArrayTopic(cameraPort + "/tagErrors")
+            .subscribe(
+                new double[] {}, PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true));
+    ids_subscriber =
+        deviceTable
+            .getDoubleArrayTopic(cameraPort + "/ids")
+            .subscribe(
+                new double[] {}, PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true));
+    multiTagError_subscriber =
+        deviceTable
+            .getDoubleTopic(cameraPort + "/multiTagError")
+            .subscribe(0, PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true));
+    latency_subscriber =
+        deviceTable
+            .getDoubleTopic(cameraPort + "/latency")
+            .subscribe(0, PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true));
 
-      var cameraPose = cameraConfig.cameraPose;
-      var cameraRotation = cameraPose.getRotation();
-      cameraPose_publisher.set(new double[]{cameraPose.getX(), cameraPose.getY(), cameraPose.getZ(), 
-          cameraRotation.getX(), cameraRotation.getY(), cameraRotation.getZ()});
-      
-      resolution_publisher.set(cameraConfig.resolution);
-      exposure_publisher.set(cameraConfig.exposure);
-      gain_publisher.set(cameraConfig.gain);
-      maxFPS_publisher.set(cameraConfig.maxFPS);
-      enableTag_publisher.set(cameraConfig.enableTag);
-      enableObj_publisher.set(cameraConfig.enableObj);
+    coralPoses_subscriber =
+        deviceTable
+            .getDoubleArrayTopic(cameraPort + "/coralPoses")
+            .subscribe(
+                new double[] {}, PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true));
 
+    cameraMatrix_publisher.set(cameraConfig.cameraMatrix);
+    distortionCoeffs_publisher.set(cameraConfig.distortionCoeffs);
+
+    var cameraPose = cameraConfig.cameraPose;
+    var cameraRotation = cameraPose.getRotation();
+    cameraPose_publisher.set(
+        new double[] {
+          cameraPose.getX(),
+          cameraPose.getY(),
+          cameraPose.getZ(),
+          cameraRotation.getX(),
+          cameraRotation.getY(),
+          cameraRotation.getZ()
+        });
+
+    resolution_publisher.set(cameraConfig.resolution);
+    exposure_publisher.set(cameraConfig.exposure);
+    gain_publisher.set(cameraConfig.gain);
+    maxFPS_publisher.set(cameraConfig.maxFPS);
+    enableTag_publisher.set(cameraConfig.enableTag);
+    enableObj_publisher.set(cameraConfig.enableObj);
   }
 
   public poseObservation getRobotPose() {
@@ -142,7 +174,7 @@ public class camera {
     prePoseList = poseList;
 
     double latency = latency_subscriber.get(0); // TODO
-    double FPGATimestamp = Timer.getFPGATimestamp() - 0.26;
+    double FPGATimestamp = Timer.getFPGATimestamp() - 0.27;
     // double t = multiTagPose_subscriber.getLastChange(); #TODO
     return new poseObservation(
         new Pose3d(

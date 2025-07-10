@@ -32,7 +32,8 @@ public class VisionConstants {
                   20,
                   1,
                   60,
-                  true, false));
+                  true,
+                  false));
           put(
               "camera_bottom_right",
               new config(
@@ -56,7 +57,8 @@ public class VisionConstants {
                   20,
                   1,
                   60,
-                  true, false));
+                  true,
+                  false));
         }
       };
   public static final HashMap<String, config>[] configs = new HashMap[] {backConfig};

@@ -24,11 +24,12 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.SuperStructureConstants.UpperStructureState;
+import frc.robot.commands.Auto.Mid103;
 import frc.robot.commands.DefaultSuperStructureCommand;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.IntakeCommands;
 import frc.robot.commands.ScoreCommand;
 import frc.robot.commands.SuperStructureMotionMagicCommand;
+import frc.robot.commands.VerticalIntakeCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.SuperStructure.SuperStructure;
 import frc.robot.subsystems.SuperStructure.arm.Arm;
@@ -136,7 +137,7 @@ public class RobotContainer {
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
-
+    autoChooser.addOption("Mid103", new Mid103(this));
     // Set up SysId routines
     autoChooser.addOption(
         "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
@@ -230,7 +231,7 @@ public class RobotContainer {
     //       return new ScoreCommand(this, new Pose2d(), m_LevelIndex, false);
     //     },
     //     Set.of(m_SuperStructure, drive)));
-    controller.R1().whileTrue(new IntakeCommands(this));
+    controller.R1().whileTrue(new VerticalIntakeCommands(this));
     // Reset gyro to 0° when B button is pressed
     controller
         .circle()
@@ -243,6 +244,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return autoChooser.get();
+    return new Mid103(this);
   }
 }
