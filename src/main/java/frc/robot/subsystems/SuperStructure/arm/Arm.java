@@ -91,11 +91,11 @@ public class Arm extends SubsystemBase {
     return inputs.armAppliedVolts;
   }
 
-  @AutoLogOutput
   public boolean atGoal() {
     return Math.abs(goal - getAngleRads()) < ArmConstants.armTolerance;
   }
 
+  @AutoLogOutput
   public boolean atGoal(double _ArmAngle) {
     return Math.abs(_ArmAngle - getAngleRads()) < ArmConstants.armTolerance;
   }

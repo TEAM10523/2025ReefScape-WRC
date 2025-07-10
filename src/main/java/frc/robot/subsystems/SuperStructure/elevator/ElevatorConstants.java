@@ -18,11 +18,11 @@ public class ElevatorConstants {
   public static final double velocity = 7;
 
   public static final double elevatorMinimumPositin = 0.0; // meters
-  public static final double elevatorMaximumPositin = 1.4; // meters
+  public static final double elevatorMaximumPositin = 1.47; // meters
   public static final double elevatorInitialPositin = -0.15;
   public static final double elevatorIntakePositin = 0.05;
 
-  public static final double elevatorTolerance = 0.1;
+  public static final double elevatorTolerance = 0.02;
 
   public static final double testUpVolts = 5.0;
   public static final double testDownVolts = -5.0;

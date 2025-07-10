@@ -56,13 +56,6 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.util.LocalADStarAK;
 import frc.robot.util.field2025.FieldPoseConversions;
 import frc.robot.util.swerve.SlipLimiter;
-
-import com.pathplanner.lib.commands.FollowPathCommand;
-import com.pathplanner.lib.config.PIDConstants;
-import com.pathplanner.lib.config.RobotConfig;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.path.PathPlannerPath;
-
 import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.locks.Lock;
@@ -124,7 +117,7 @@ public class Drive extends SubsystemBase {
           rawGyroRotation,
           lastModulePositions,
           new Pose2d(),
-          VecBuilder.fill(0.01, 0.01, 0.01),
+          VecBuilder.fill(0.001, 0.001, 1e-10),
           VecBuilder.fill(0.9, 0.9, 0.9));
 
   private SlipLimiter slipLimiter;
@@ -144,7 +137,7 @@ public class Drive extends SubsystemBase {
     modules[1] = new Module(frModuleIO, 1, TunerConstants.FrontRight);
     modules[2] = new Module(blModuleIO, 2, TunerConstants.BackLeft);
     modules[3] = new Module(brModuleIO, 3, TunerConstants.BackRight);
-        
+
     // Usage reporting for swerve template
     HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_AdvantageKit);
 
@@ -173,7 +166,7 @@ public class Drive extends SubsystemBase {
           Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
         });
 
-    try{
+    try {
       robotconfig = RobotConfig.fromGUISettings();
     } catch (Exception e) {
       // Handle exception as needed
@@ -425,77 +418,89 @@ public class Drive extends SubsystemBase {
       new Translation2d(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY)
     };
   }
-  public ChassisSpeeds getFieldRelativeSpeeds(){
-      return ChassisSpeeds.fromRobotRelativeSpeeds(getChassisSpeeds(), getHeading());
+
+  public ChassisSpeeds getFieldRelativeSpeeds() {
+    return ChassisSpeeds.fromRobotRelativeSpeeds(getChassisSpeeds(), getHeading());
   }
-  public Rotation2d getHeading(){
+
+  public Rotation2d getHeading() {
     return getPose().getRotation();
   }
 
-  public ChassisSpeeds getAutoFlipedRobotRelativeSpeeds(){
+  public ChassisSpeeds getAutoFlipedRobotRelativeSpeeds() {
     var fieldRelativeSpeed = getFieldRelativeSpeeds();
-    if(autoFliped){
+    if (autoFliped) {
       return ChassisSpeeds.fromFieldRelativeSpeeds(
-        new ChassisSpeeds(fieldRelativeSpeed.vxMetersPerSecond, -fieldRelativeSpeed.vyMetersPerSecond, -fieldRelativeSpeed.omegaRadiansPerSecond), getAutoFlipedPose().getRotation());
+          new ChassisSpeeds(
+              fieldRelativeSpeed.vxMetersPerSecond,
+              -fieldRelativeSpeed.vyMetersPerSecond,
+              -fieldRelativeSpeed.omegaRadiansPerSecond),
+          getAutoFlipedPose().getRotation());
     }
     return getChassisSpeeds();
   }
-  
+
   public Pose2d getAutoFlipedPose() {
-    if(autoFliped){
+    if (autoFliped) {
       return FieldPoseConversions.YFlipPose2d(getPose());
     }
     return getPose();
   }
 
-  //use this to update the autonomous speeds target
-  private void setAutoDesireSpeeds(ChassisSpeeds desiredSpeeds){
-    
-    ChassisSpeeds rawAutonomousDesiredSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(desiredSpeeds, getAutoFlipedPose().getRotation());
-    if(autoFliped){
-      runVelocityFieldRelative(new ChassisSpeeds(rawAutonomousDesiredSpeeds.vxMetersPerSecond, -rawAutonomousDesiredSpeeds.vyMetersPerSecond, -rawAutonomousDesiredSpeeds.omegaRadiansPerSecond));
-    }else{
+  // use this to update the autonomous speeds target
+  private void setAutoDesireSpeeds(ChassisSpeeds desiredSpeeds) {
+
+    ChassisSpeeds rawAutonomousDesiredSpeeds =
+        ChassisSpeeds.fromRobotRelativeSpeeds(desiredSpeeds, getAutoFlipedPose().getRotation());
+    if (autoFliped) {
+      runVelocityFieldRelative(
+          new ChassisSpeeds(
+              rawAutonomousDesiredSpeeds.vxMetersPerSecond,
+              -rawAutonomousDesiredSpeeds.vyMetersPerSecond,
+              -rawAutonomousDesiredSpeeds.omegaRadiansPerSecond));
+    } else {
       runVelocityFieldRelative(rawAutonomousDesiredSpeeds);
     }
   }
 
-
-  public PathPlannerPath generatePath(String pathName){
-     try {
+  public PathPlannerPath generatePath(String pathName) {
+    try {
       return PathPlannerPath.fromChoreoTrajectory(pathName);
     } catch (IOException e) {
-        // Handle IOException
-        e.printStackTrace();
+      // Handle IOException
+      e.printStackTrace();
     } catch (Exception e) {
-        // Handle ParseException
-        e.printStackTrace();
+      // Handle ParseException
+      e.printStackTrace();
     }
     return null; // Return null or some default value if an exception occurs
   }
 
-  public Command followPathCommand(PathPlannerPath path){
-    return 
-        new FollowPathCommand(
-            path,
-            this:: getAutoFlipedPose, // Robot pose supplier
-            this:: getAutoFlipedRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-            (speeds,feedforward)-> setAutoDesireSpeeds(speeds), // ChassisSpeeds consumer. MUST BE ROBOT RELATIVE::setChassisSpeeds
-            new PPHolonomicDriveController( // PPHolonomicDriveController, this should likely live in your Constants class
-                new PIDConstants(5, 0.0, 0.0), // Translation PID constants
-                new PIDConstants(5, 0.0, 0.0) // Rotation PID constants
+  public Command followPathCommand(PathPlannerPath path) {
+    return new FollowPathCommand(
+        path,
+        this::getAutoFlipedPose, // Robot pose supplier
+        this::getAutoFlipedRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+        (speeds, feedforward) ->
+            setAutoDesireSpeeds(
+                speeds), // ChassisSpeeds consumer. MUST BE ROBOT RELATIVE::setChassisSpeeds
+        new PPHolonomicDriveController( // PPHolonomicDriveController, this should likely live in
+            // your Constants class
+            new PIDConstants(5, 0.0, 0.0), // Translation PID constants
+            new PIDConstants(5, 0.0, 0.0) // Rotation PID constants
             ),
-            robotconfig,
-            () -> {
-                // Boolean supplier that controls when the path will be mirrored for the red alliance
-                // This will flip the path being followed to the red side of the field.
-                // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-                var alliance = DriverStation.getAlliance();
-                if (alliance.isPresent()) {
-                    return alliance.get() == DriverStation.Alliance.Red;
-                }
-                return false;
-            },
-            this // Reference to this subsystem to set requirements
+        robotconfig,
+        () -> {
+          // Boolean supplier that controls when the path will be mirrored for the red alliance
+          // This will flip the path being followed to the red side of the field.
+          // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+          var alliance = DriverStation.getAlliance();
+          if (alliance.isPresent()) {
+            return alliance.get() == DriverStation.Alliance.Red;
+          }
+          return false;
+        },
+        this // Reference to this subsystem to set requirements
         );
-    }
+  }
 }

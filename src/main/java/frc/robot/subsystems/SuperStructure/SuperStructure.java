@@ -90,11 +90,11 @@ public class SuperStructure extends SubsystemBase {
     intake.runSetPoint(speed, 0);
   }
 
-  @AutoLogOutput
   public boolean atGoal() {
     return elevator.atGoal() && arm.atGoal() && wrist.atGoal();
   }
 
+  @AutoLogOutput
   public boolean atGoal(SuperStructureConstants.UpperStructureState _State) {
     return elevator.atGoal(_State.elevator_height)
         && arm.atGoal(_State.arm_theta)

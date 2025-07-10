@@ -24,7 +24,7 @@ public class ArmConstants {
   public static final double armInitialAngle = Math.toRadians(90);
   public static final double armIntakeAngle = Math.toRadians(20);
 
-  public static final double armTolerance = Math.toRadians(30);
+  public static final double armTolerance = Math.toRadians(5);
 
   public static final double testUpVolts = 5.0;
   public static final double testDownVolts = -5.0;

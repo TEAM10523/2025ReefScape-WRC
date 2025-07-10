@@ -93,11 +93,11 @@ public class Elevator extends SubsystemBase {
     return inputs.elevatorAppliedVolts;
   }
 
-  @AutoLogOutput
   public boolean atGoal() {
     return Math.abs(goal - getPositionMeters()) < ElevatorConstants.elevatorTolerance;
   }
 
+  @AutoLogOutput
   public boolean atGoal(double _ElevatorHeight) {
     return Math.abs(_ElevatorHeight - getPositionMeters()) < ElevatorConstants.elevatorTolerance;
   }

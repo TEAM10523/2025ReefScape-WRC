@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.SuperStructureConstants;
+import frc.robot.Constants.SuperStructureConstants.UpperStructureState;
 import frc.robot.RobotContainer;
 
 public class SuperStructureMotionMagicCommand extends Command {
@@ -19,6 +20,15 @@ public class SuperStructureMotionMagicCommand extends Command {
     m_TargetHeight = _TargetHeight;
     m_TargetArmAngle = _TargetArmAngle;
     m_WristAngle = _WristAngle;
+    m_RobotContainer = _RobotContainer;
+    addRequirements(m_RobotContainer.m_SuperStructure);
+  }
+
+  public SuperStructureMotionMagicCommand(
+      UpperStructureState _UpperStructureState, RobotContainer _RobotContainer) {
+    m_TargetHeight = _UpperStructureState.elevator_height;
+    m_TargetArmAngle = _UpperStructureState.arm_theta;
+    m_WristAngle = _UpperStructureState.wrist_theta;
     m_RobotContainer = _RobotContainer;
     addRequirements(m_RobotContainer.m_SuperStructure);
   }

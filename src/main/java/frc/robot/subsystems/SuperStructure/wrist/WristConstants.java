@@ -26,7 +26,7 @@ public class WristConstants {
   public static final double wristScoringPosition = 1.8;
   public static final double wristIntakingPosition = 0;
 
-  public static final double wristTolerance = Math.toRadians(30);
+  public static final double wristTolerance = Math.toRadians(10);
 
   public static final double testVolts = 5.0;
 

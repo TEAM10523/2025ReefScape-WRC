@@ -42,12 +42,14 @@ public final class Constants {
     public static final double kPositionTolerance = 0.03;
     public static final double kAngleTolerance = 0.05;
     public static final double kToleranceDeg = 2.0;
-    public static final double kMaxVelocity = 2.5;
-    public static final double kMaxAngularvelocity = Math.PI;
+    public static final double kMaxVelocity = 2.;
+    public static final double kMaxAngularvelocity = Math.PI * 1.2;
     public static final double PlacementThreshold = 1.0;
     public static final double ScoreThresholdDirection = 0.1;
     public static final double ScoreThresholdDistance = 0.03;
     public static final double ScoreThresholdElevator = 0.1;
+    public static final double pushThreshold = 0.3;
+    public static final double pushDistance = 0.2;
   }
 
   public class SuperStructureConstants {
@@ -55,7 +57,7 @@ public final class Constants {
       ScoreL1(0.05, 0.99, 0),
       ScoreL2(0.281, 2.0, 1.8),
       ScoreL3(0.744, 1.98, 1.8),
-      ScoreL4(1.4185, 1.865, 1.8),
+      ScoreL4(1.46, 1.865, 1.8),
       RemoveL3(0.694, 2.909464, 1.8),
       RemoveL2(0.758, 2.734, 1.8),
       GroundIntake(0.05, -0.15, 0),
@@ -75,10 +77,6 @@ public final class Constants {
         this.wrist_theta = wrist_theta;
       }
     }
-
-    
-
-
   }
 
   public enum Location {
