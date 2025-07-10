@@ -15,6 +15,8 @@ public class config {
   public double exposure;
   public double gain;
   public double maxFPS;
+  public boolean enableTag;
+  public boolean enableObj;
 
   public config(
       double[] cameraMatrix,
@@ -23,7 +25,9 @@ public class config {
       long[] resolution,
       double exposure,
       double gain,
-      double maxFPS) {
+      double maxFPS,
+      boolean enableTag,
+      boolean enableObj) {
     this.cameraMatrix = cameraMatrix;
     this.distortionCoeffs = distortionCoeffs;
     this.cameraPose = cameraPose;
@@ -31,5 +35,7 @@ public class config {
     this.exposure = exposure;
     this.gain = gain;
     this.maxFPS = maxFPS;
+    this.enableTag = enableTag;
+    this.enableObj = enableObj;
   }
 }

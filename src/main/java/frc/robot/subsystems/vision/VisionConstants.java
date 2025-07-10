@@ -8,7 +8,7 @@ import java.util.HashMap;
 public class VisionConstants {
 
   public static final VisionIO[] ios =
-      new VisionIOBlackholeVision[] {new VisionIOBlackholeVision("BlackholeVision")};
+      new VisionIOBlackholeVision[] {new VisionIOBlackholeVision("BlackholeVision-L")};
   public static HashMap<String, config> backConfig =
       new HashMap<>() {
         {
@@ -31,7 +31,8 @@ public class VisionConstants {
                   new long[] {720, 1280},
                   20,
                   1,
-                  60));
+                  60,
+                  true, false));
           put(
               "camera_bottom_right",
               new config(
@@ -54,7 +55,8 @@ public class VisionConstants {
                   new long[] {720, 1280},
                   20,
                   1,
-                  60));
+                  60,
+                  true, false));
         }
       };
   public static final HashMap<String, config>[] configs = new HashMap[] {backConfig};
